@@ -48,5 +48,10 @@
     		<artifactId>commons-lang3</artifactId>
     		<version>3.8</version>
 	</dependency>
+	<dependency>
+    		<groupId>com.samskivert</groupId>
+    		<artifactId>jmustache</artifactId>
+    		<version>1.5</version>
+	</dependency>
   </dependencies>
 </project>

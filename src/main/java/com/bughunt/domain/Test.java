@@ -1,11 +1,21 @@
 package com.bughunt.domain;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.bughunt.config.BugHuntConfig;
+import com.bughunt.constants.BugHuntConstants;
+import com.bughunt.core.TestSession;
+import com.bughunt.util.CommonUtil;
 
 public class Test {
 	private int id;
@@ -17,6 +27,8 @@ public class Test {
 	private List<Step> steps = null;
 	private List<Map<String, String>> props = null;
 	private OverALLStatus overAllStatus = OverALLStatus.NOT_STARTED;
+	private List<MethodVO> keywords;
+	private String dirPath;
 	
 	public Test(String name, int id, Map<String, String> propMap) {
 		this.name = name;
@@ -24,11 +36,10 @@ public class Test {
 		steps = new ArrayList<>();
 		props = new ArrayList<>();
 		
-		addTCProps("TestCase name", name);
-		
-		for(Entry<String, String> mapProps : propMap.entrySet()) {
-			addTCProps(mapProps.getKey(), mapProps.getValue());
-		}
+		addTCProps("Test Case Name", name);
+		addTCProps(BugHuntConstants.ENVIRONMENT, 
+				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
+		setReportProps(propMap);
 	}
 	
 	public int getId() {
@@ -49,6 +60,22 @@ public class Test {
 	
 	public int getStepsWithWarning() {
 		return stepsWithWarning;
+	}
+	
+	public OverALLStatus getOverAllStatus() {
+		return overAllStatus;
+	}
+
+	private void setOverAllStatus(OverALLStatus overAllStatus) {
+		this.overAllStatus = overAllStatus;
+	}
+	
+	public List<MethodVO> getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(List<MethodVO> keywords) {
+		this.keywords = keywords;
 	}
 	
 	private void addTCProps(String label, String value) {
@@ -80,11 +107,28 @@ public class Test {
 		steps.add(step);
 	}
 	
+	private void setReportProps(Map<String, String> propMap) {
+		for(String prop: TestSession.getReportProps()) {
+			if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))) {
+				addTCProps(prop, propMap.get(prop));
+			}
+		}
+	}
+	
+	public String getDirPath() {
+		return dirPath + "/";
+	}
+
 	public void setExecutionStatus() {
 		stepsPassed = (int) steps.stream().filter(s->s.isStepPassed()).count();
 		stepsFailed = (int) steps.stream().filter(s->s.isStepFailed()).count();
 		stepsWithWarning = (int) steps.stream().filter(s->s.isStepWithWarning()).count();
-		
+		addTCProps("No of Steps Passed", String.valueOf(stepsPassed));
+		addTCProps("No of Steps Failed", String.valueOf(stepsFailed));
+		if(stepsWithWarning > 0) {
+			addTCProps("No of Steps with Warnings", String.valueOf(stepsWithWarning));
+		}
+		addTCProps("Execution Time", String.valueOf(stepsWithWarning));
 		if(stepsFailed == 0) {
 			setOverAllStatus(OverALLStatus.PASSED);
 			addTCProps("Result", "PASS");
@@ -92,20 +136,21 @@ public class Test {
 			setOverAllStatus(OverALLStatus.FAILED);
 			addTCProps("Result", "FAIL");
 		}
-		
-		addTCProps("No of steps passed", String.valueOf(stepsPassed));
-		addTCProps("No of steps failed", String.valueOf(stepsFailed));
-		addTCProps("Execution Time", String.valueOf(stepsWithWarning));
 	}
 	
-	public OverALLStatus getOverAllStatus() {
-		return overAllStatus;
+	public void createReportFolder() {
+		String reportPath = BugHuntConfig.instance().getExecutionReportPath();
+		dirPath = reportPath + id + "_" + CommonUtil.getShortFileName(name);
+		Path dir = Paths.get(dirPath);
+		try {
+			if(!Files.exists(dir)) {
+				Files.createDirectory(dir);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-
-	private void setOverAllStatus(OverALLStatus overAllStatus) {
-		this.overAllStatus = overAllStatus;
-	}
-
+	
 	private class Step {
 		private int stepNo;
 		private String desc;
@@ -180,8 +225,7 @@ public class Test {
 	public String toString() {
 		return "Test [id=" + id + ", name=" + name + ", stepsPassed=" + stepsPassed + ", stepsFailed=" + stepsFailed
 				+ ", stepsWithWarning=" + stepsWithWarning + ", stepNo=" + stepNo + ", steps=" + steps + ", props="
-				+ props + ", overAllStatus=" + overAllStatus + "]";
+				+ props + ", overAllStatus=" + overAllStatus + ", keywords=" + keywords + "]";
 	}
-	
 	
 }

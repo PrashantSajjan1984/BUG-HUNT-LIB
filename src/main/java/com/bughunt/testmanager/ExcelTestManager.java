@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,7 +27,7 @@ import com.bughunt.util.ExcelUtil;
 public class ExcelTestManager extends TestManager {
 
 	private static Map<String, Integer> headerMap;
-	
+	List<Test> tests = null;
 	@Override
 	public void setTestsToExecute() {
 		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
@@ -34,7 +35,7 @@ public class ExcelTestManager extends TestManager {
 		String testSet = bugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_SET);
 		File file = null;
 		Workbook workbook = null;
-		TestSession.testCases = new ArrayList<>();
+		tests = new ArrayList<>();
 		try {
 			file = new File(fileName);
 			if ("xlsx".equals(ExcelUtil.getExcelFileExtension(fileName))) {
@@ -58,7 +59,7 @@ public class ExcelTestManager extends TestManager {
 				headerMap.put(cell.getStringCellValue(), cell.getColumnIndex());				
 			}
 			// verifyRunManagerColumns(ExecutionSession.runManagerColumnMap);
-			int testManagerRowNo = -1;
+			int testManagerRowNo = 0;
 			while (rows.hasNext()) {
 				row = (Row) rows.next();
 				testManagerRowNo++;
@@ -78,9 +79,9 @@ public class ExcelTestManager extends TestManager {
 					break;
 				}			
 			}	
+			TestSession.setTestCases(tests);
 		} catch (Exception ex) {
-
-			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 		} finally {
 			closeWorkBook(workbook);
 		}
@@ -122,7 +123,7 @@ public class ExcelTestManager extends TestManager {
 		}
 		
 		Test test = new Test(testName, testManagerRowNo, testProps);
-		TestSession.testCases.add(test);
+		tests.add(test);
 	}
 	
 	private void closeWorkBook(Workbook workbook) {

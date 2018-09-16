@@ -2,9 +2,15 @@ package com.bughunt.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.bughunt.constants.BugHuntConstants;
+import com.bughunt.core.TestSession;
 import com.bughunt.util.CommonUtil;
 
 public class BugHuntConfig {
@@ -17,9 +23,11 @@ public class BugHuntConfig {
 	private String reportsTemplatePath;
 	private String reportsPath;
 	private String dataPath;
+	private String executionReportPath;
 	private boolean configSet = false;
 	
 	private BugHuntConfig() {
+		
 	}
 	
 	public static BugHuntConfig instance() {
@@ -77,6 +85,14 @@ public class BugHuntConfig {
 		this.dataPath = dataPath;
 	}
 	
+	public String getExecutionReportPath() {
+		return executionReportPath;
+	}
+
+	public void setExecutionReportPath(String executionReportPath) {
+		this.executionReportPath = executionReportPath + "/"; 
+	}
+
 	public void setConfigPaths() {
 		if(configSet) {
 			return;
@@ -89,7 +105,10 @@ public class BugHuntConfig {
 		String codePath = CommonUtil.getClassLocation(getBugHuntProperty(BugHuntConstants.RUNNER_CLASS));
 		String relKeywordPackage = getBugHuntProperty(BugHuntConstants.KEYWORDS_PACKAGE).replaceAll("\\.", "\\/");
 		setKeywordPackagePath(codePath + relKeywordPackage);
-		System.out.println(keywordPackagePath);
+		dataPath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.DATA_PATH;
+		reportsTemplatePath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_TEMPLATE_PATH;
+		reportsPath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_PATH;
+		setReportProps();
 	}
 	
 	private void setFWProps() {
@@ -110,5 +129,11 @@ public class BugHuntConfig {
 			ex.printStackTrace();
 		}
         return propertyVal;
+	}
+	
+	public void setReportProps() {
+		String reportProps = getBugHuntProperty(BugHuntConstants.REPORT_PROPERTIES);
+		String[] propsSplit = reportProps.split(",");
+		TestSession.setReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
 	}
 }
