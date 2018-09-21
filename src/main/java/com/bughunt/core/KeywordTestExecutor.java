@@ -1,6 +1,7 @@
 package com.bughunt.core;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,48 +17,64 @@ public class KeywordTestExecutor extends TestExecutor {
 
 	@Override
 	protected void callTestMethods(Test test) {
-		Map<String, Object> instanceMap = new HashMap<>();
+		Map<String, Object> instanceMap = null;
 		Object keywordObj = null;
-		Class<?> keywordClass = null;
-		Constructor<?> constructor =null;
 		test.createReportFolder();
 		Report report = new Report(test);
-		DataUtil dataUtil = new DataUtil();
-		callBeforeAfterMethods(BugHuntConstants.BEFORE_ANNOTATION);
-		for(MethodVO methodVO: test.getKeywords()) {
-			try {
-				if(!instanceMap.containsKey(methodVO.getClassName())) {
-					keywordClass = Class.forName(methodVO.getClassName());
-					constructor = keywordClass
-							.getConstructor(new Class[] { ParameterVO.class });
-					keywordObj = constructor.newInstance(new ParameterVO(report, dataUtil, test.getName()));
-					instanceMap.put(methodVO.getClassName(), keywordObj);
-				} else {
-					keywordObj = instanceMap.get(methodVO.getClassName());
+		DataUtil dataUtil = new DataUtil(test);
+		callBeforeAfterMethods(BugHuntConstants.BEFORE_ANNOTATION, test, report, dataUtil);
+		int totalIteration = test.isRunMultiIteration() ? dataUtil.getTotalIteration() : 1;
+		test.setTotalIteration(totalIteration);
+		for(int i=1; i<=totalIteration;i++) {
+			instanceMap = new HashMap<>();
+			dataUtil.setIteration(i);
+			test.setCurrentIteration(i);
+			for(MethodVO methodVO: test.getKeywords()) {
+				dataUtil.setKeyword(methodVO.getName());
+				try {
+					if(!instanceMap.containsKey(methodVO.getClassName())) {
+						keywordObj = getKeywordClassInstance(test, report, dataUtil, methodVO);
+						instanceMap.put(methodVO.getClassName(), keywordObj);
+					} else {
+						keywordObj = instanceMap.get(methodVO.getClassName());
+					}
+					keywordObj.getClass().getMethod(methodVO.getName()).invoke(keywordObj);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				keywordObj.getClass().getMethod(methodVO.getName()).invoke(keywordObj);
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+			test.addStepsAfterIteration();
 		}
-		callBeforeAfterMethods(BugHuntConstants.AFTER_ANNOTATION);
+		callBeforeAfterMethods(BugHuntConstants.AFTER_ANNOTATION, test, report, dataUtil);
 		test.setExecutionStatus();
 		report.saveReport();
 	}
+
+	private Object getKeywordClassInstance(Test test, Report report, DataUtil dataUtil, MethodVO methodVO)
+			throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException,
+			InvocationTargetException {
+		Object keywordObj;
+		Class<?> keywordClass;
+		Constructor<?> constructor;
+		keywordClass = Class.forName(methodVO.getClassName());
+		constructor = keywordClass
+				.getConstructor(new Class[] { ParameterVO.class });
+		keywordObj = constructor.newInstance(new ParameterVO(report, dataUtil, test.getName(), test.getDirPath()));
+		return keywordObj;
+	}
 	
-	private void callBeforeAfterMethods(String annotation) {
+	private void callBeforeAfterMethods(String annotation, Test test, Report report, DataUtil dataUtil) {
 		MethodVO methodVO = TestSession.getAnnotationMap().get(annotation);
 		Object instance = null;
 		Method method = null;
 		try {
-			instance = Class.forName(methodVO.getClassName()).newInstance();
+			instance = getKeywordClassInstance(test, report, dataUtil, methodVO);
 			if(methodVO.isSuperClass()) {
 				method = instance.getClass().getSuperclass().getDeclaredMethod(methodVO.getName());
-				method.invoke(instance);
 			} else {
 				method = instance.getClass().getDeclaredMethod(methodVO.getName());
-				method.invoke(instance);
 			}
+			method.invoke(instance);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

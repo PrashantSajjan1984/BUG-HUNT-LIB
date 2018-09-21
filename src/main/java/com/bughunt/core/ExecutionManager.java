@@ -18,6 +18,7 @@ import com.bughunt.keywordmanager.KeywordManager;
 import com.bughunt.testmanager.ExcelTestManager;
 import com.bughunt.testmanager.TestManager;
 import com.bughunt.util.CommonUtil;
+import com.bughunt.util.ExcelUtil;
 import com.bughunt.util.PersistMethods;
 
 public class ExecutionManager {
@@ -56,6 +57,7 @@ public class ExecutionManager {
 		persistMethods();
 		setTestsToExecute();
 		setTestKeywords();
+		setMasterTestData();
 		createExecutionReportFolder();
 		executeTests();
 	}
@@ -102,6 +104,10 @@ public class ExecutionManager {
         String reportFolder = BugHuntConfig.instance().getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH 
         		+ BugHuntConstants.REPORT_PATH + BugHuntConstants.BUG_HUNT_REPORT + "_" + formatDateTime;
 		return reportFolder;
+	}
+	
+	private void setMasterTestData() {
+		ExcelUtil.setMasterTestData();
 	}
 	
 	private void executeTests() {

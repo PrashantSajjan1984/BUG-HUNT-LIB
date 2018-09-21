@@ -1,12 +1,14 @@
 package com.bughunt.core;
 
 import java.lang.reflect.Method;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.bughunt.domain.MethodVO;
+import com.bughunt.domain.StepResult;
 import com.bughunt.domain.Test;
 
 public class TestSession {
@@ -14,6 +16,8 @@ public class TestSession {
 	private static Map<String, MethodVO> keywordMap;
 	private static Set<String> reportProps;
 	private static Map<String, MethodVO> annotationMap;
+	private static EnumSet<StepResult> screenShotStepResults;
+	private static Map<Integer, Object> masterTestData;
 	
 	private TestSession() {
 		
@@ -50,7 +54,22 @@ public class TestSession {
 	public static void setAnnotationMap(Map<String, MethodVO> annotationMap) {
 		TestSession.annotationMap = annotationMap;
 	}
-	
+
+	public static EnumSet<StepResult> getScreenShotStepResults() {
+		return screenShotStepResults;
+	}
+
+	public static void setScreenShotStepResults(EnumSet<StepResult> screenShotStepResults) {
+		TestSession.screenShotStepResults = screenShotStepResults;
+	}
+
+	public static Map<Integer, Object> getMasterTestData() {
+		return masterTestData;
+	}
+
+	public static void setMasterTestData(Map<Integer, Object> masterTestData) {
+		TestSession.masterTestData = masterTestData;
+	}
 }
 
 

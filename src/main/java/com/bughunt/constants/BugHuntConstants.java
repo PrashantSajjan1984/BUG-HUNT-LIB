@@ -22,9 +22,13 @@ public class BugHuntConstants {
 	public static final String TEST_DATA_FORMAT = "TestDataFormat";
 	public static final String REPORT_PROPERTIES = "ReportProperties";
 	public static final String SCREEN_SHOT_CLASS = "ScreenShotClass";
+	public static final String PASS_SCREENSHOT = 	"PassScreenShot";
+	public static final String FAIL_SCREENSHOT = 	"FailScreenShot";
+	public static final String WARNING_SCREENSHOT = 	"WarningScreenShot";
 	
 	public static final String BEFORE_ANNOTATION ="Before";
 	public static final String AFTER_ANNOTATION ="After";
+	
 	
 	//TestManager Columns
 	

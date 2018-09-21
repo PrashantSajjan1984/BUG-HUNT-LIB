@@ -1,16 +1,19 @@
 package com.bughunt.config;
 
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.bughunt.constants.BugHuntConstants;
 import com.bughunt.core.TestSession;
+import com.bughunt.domain.StepResult;
 import com.bughunt.util.CommonUtil;
 
 public class BugHuntConfig {
@@ -25,6 +28,8 @@ public class BugHuntConfig {
 	private String dataPath;
 	private String executionReportPath;
 	private boolean configSet = false;
+	private String envURL;
+	private JSONObject urlJSONObj;
 	
 	private BugHuntConfig() {
 		
@@ -109,8 +114,12 @@ public class BugHuntConfig {
 		reportsTemplatePath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_TEMPLATE_PATH;
 		reportsPath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_PATH;
 		setReportProps();
+		setScreenShotEnum();
+		setURLJsonObject();
 	}
 	
+	
+
 	private void setFWProps() {
 		bugHuntProps = new Properties();
 		try {
@@ -131,9 +140,59 @@ public class BugHuntConfig {
         return propertyVal;
 	}
 	
-	public void setReportProps() {
+	private void setReportProps() {
 		String reportProps = getBugHuntProperty(BugHuntConstants.REPORT_PROPERTIES);
 		String[] propsSplit = reportProps.split(",");
 		TestSession.setReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
+	}
+	
+	private void setScreenShotEnum() {
+		EnumSet<StepResult> screenShotList = EnumSet.noneOf(StepResult.class);
+		if("true".equals(getBugHuntProperty(BugHuntConstants.PASS_SCREENSHOT).toLowerCase())) {
+			screenShotList.add(StepResult.PASS);
+		}
+		if("true".equals(getBugHuntProperty(BugHuntConstants.FAIL_SCREENSHOT).toLowerCase())) {
+			screenShotList.add(StepResult.FAIL);
+		}
+		if("true".equals(getBugHuntProperty(BugHuntConstants.WARNING_SCREENSHOT).toLowerCase())) {
+			screenShotList.add(StepResult.WARNING);
+		}
+		TestSession.setScreenShotStepResults(screenShotList);
+	}
+
+	public String getEnvironmentURL() {
+		if(null==envURL) {
+			setEnvURL();
+		}
+		return envURL;
+	}
+	
+	private void setURLJsonObject() {
+		JSONParser parser = new JSONParser();
+		try {
+			urlJSONObj  =  (JSONObject) parser.parse(new FileReader(baseFWPath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + "Environment.json"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	private void setEnvURL() {
+		String env = getBugHuntProperty("Environment");
+		getEnvironmentURL(env);
+		if(null!=urlJSONObj && urlJSONObj.containsKey(env)) {
+			envURL = (String) urlJSONObj.get(env);
+		} else {
+			envURL = "";
+		}
+	}
+	
+	public String getEnvironmentURL(String environment) {
+		String url = "";
+		if(null!=urlJSONObj && urlJSONObj.containsKey(environment)) {
+			url = (String) urlJSONObj.get(environment);
+		} else {
+			url = "";
+		}
+		return url;
 	}
 }

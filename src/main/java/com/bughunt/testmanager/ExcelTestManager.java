@@ -12,10 +12,12 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.bughunt.config.BugHuntConfig;
@@ -30,24 +32,11 @@ public class ExcelTestManager extends TestManager {
 	List<Test> tests = null;
 	@Override
 	public void setTestsToExecute() {
-		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
-		String fileName = bugHuntConfig.getBaseFWPath() + "/TestManager";
-		String testSet = bugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_SET);
-		File file = null;
-		Workbook workbook = null;
+		Workbook workBook = null;
 		tests = new ArrayList<>();
 		try {
-			file = new File(fileName);
-			if ("xlsx".equals(ExcelUtil.getExcelFileExtension(fileName))) {
-				fileName = fileName + ".xlsx";
-				file = new File(fileName);
-				workbook = new XSSFWorkbook(file);
-			} else {
-				fileName = fileName + ".xls";
-				file = new File(fileName);
-				workbook = new HSSFWorkbook(new FileInputStream(file));
-			}
-			Sheet sheet = workbook.getSheet(testSet);
+			workBook = getWorkBook();
+			Sheet sheet = getTestManagerSheet(workBook);
 			Iterator<Row> rows = sheet.rowIterator();
 			String tcName;
 			Row row = (Row) rows.next();
@@ -83,39 +72,56 @@ public class ExcelTestManager extends TestManager {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		} finally {
-			closeWorkBook(workbook);
+			closeWorkBook(workBook);
 		}
 	}
 	
-	@Override
-	public Map<String, String> getTestManagerRow(int rowNo) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<String, String> getTestManagerRow(String testCaseName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getTestManagerColumnVal(int rowNo, String columnName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getTestManagerColumnVal(String testCaseName, String columnName) {
-		// TODO Auto-generated method stub
-		return null;
+	private Workbook getWorkBook() throws InvalidFormatException, IOException {
+		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
+		String fileName = bugHuntConfig.getBaseFWPath() + "/TestManager";
+		File file = null;
+		Workbook workBook = null;
+		tests = new ArrayList<>();
+		file = new File(fileName);
+		if ("xlsx".equals(ExcelUtil.getExcelFileExtension(fileName))) {
+			fileName = fileName + ".xlsx";
+			file = new File(fileName);
+			workBook = new XSSFWorkbook(file);
+		} else {
+			fileName = fileName + ".xls";
+			file = new File(fileName);
+			workBook = new HSSFWorkbook(new FileInputStream(file));
+		}
+		return workBook;
 	}
 	
+	private Sheet getTestManagerSheet(Workbook workBook) throws InvalidFormatException, IOException {
+		String testSet = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_SET);
+		return workBook.getSheet(testSet);
+	}
 	
+	@Override
+	public String getTestManagerColumnVal(String columnName, int rowNum) {
+		String columnVal = "";
+		if(!headerMap.containsKey(columnName)) {
+			return columnVal;
+		}
+		Workbook workBook = null;
+		try {
+			 workBook = getWorkBook();
+			 Sheet sheet = getTestManagerSheet(workBook);
+			 Row row = sheet.getRow(rowNum);
+			 columnVal = ExcelUtil.getCellVal(row, headerMap.get(columnName));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeWorkBook(workBook);
+		}
+		return columnVal;
+	}
 	
 	private void addTestsToTestSession(Row row, String testName, int testManagerRowNo) {
 		Map<String, String> testProps = new LinkedHashMap<>();
-		Iterator<Cell> cellIt = row.cellIterator();
 		String cellVal;
 		for(Entry<String, Integer> entry : headerMap.entrySet()) {
 			cellVal = ExcelUtil.getCellVal(row, entry.getValue());
@@ -126,9 +132,9 @@ public class ExcelTestManager extends TestManager {
 		tests.add(test);
 	}
 	
-	private void closeWorkBook(Workbook workbook) {
+	private void closeWorkBook(Workbook workBook) {
 		try {
-			workbook.close();
+			workBook.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

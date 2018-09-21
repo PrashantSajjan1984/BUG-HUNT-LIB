@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 
 import com.bughunt.config.BugHuntConfig;
 import com.bughunt.constants.BugHuntConstants;
+import com.bughunt.core.TestSession;
 import com.bughunt.domain.ScreenShot;
 import com.bughunt.domain.StepResult;
 import com.bughunt.domain.Test;
@@ -35,9 +36,15 @@ public class Report {
 	public void addReportStep(String description, String actualDesc, StepResult stepResult) {
 		if(screenShot!=null) {
 			String screenShotFile = screenShotPath + String.format("ScreenShot%d.jpg", ++screenShotNum);
-			screenShot.takeScreenShot(screenShotFile);
+			if(TestSession.getScreenShotStepResults().contains(stepResult)) {
+				screenShot.takeScreenShot(screenShotFile);
+				test.addTestStep(description, actualDesc, stepResult, Optional.of(screenShotFile));
+			} else {
+				test.addTestStep(description, actualDesc, stepResult, Optional.ofNullable(null));
+			}
+		} else {
+			test.addTestStep(description, actualDesc, stepResult, Optional.ofNullable(null));
 		}
-		test.addTestStep(description, actualDesc, stepResult, Optional.ofNullable(null));
 	}
 	
 	private void setScreenShotInstanceAndFolder() {

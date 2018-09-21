@@ -50,6 +50,7 @@ public class PersistMethods {
 				System.out.println("Error in constructor for class here: " +packageClass.getName());
 			}    		   	
 		}
+		TestSession.setKeywordMap(keywordMap);
 		if(sameKeywordMap.size() > 0) {
 			StringBuilder sb = new StringBuilder("Below keywords are repeated.\n");
 			List<String> lstClasses;
@@ -67,13 +68,10 @@ public class PersistMethods {
 		
 		Class<?> superClass = classes.get(0).newInstance().getClass().getSuperclass();
 		setBaseClassBeforeAfter(superClass, classes.get(0));
-		
+		TestSession.setAnnotationMap(annotationMap);
 		if(sameAnnotationMap.containsKey(BugHuntConstants.BEFORE_ANNOTATION) || sameAnnotationMap.containsKey(BugHuntConstants.AFTER_ANNOTATION)) {
 			handleDuplicateBeforeAfterMethods();
 		}
-		
-		TestSession.setKeywordMap(keywordMap);
-		TestSession.setAnnotationMap(annotationMap);
 	}
 	
 	public void addKeywords(Object obj) {
