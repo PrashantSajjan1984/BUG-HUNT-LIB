@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import com.bughunt.config.BugHuntConfig;
 import com.bughunt.constants.BugHuntConstants;
 import com.bughunt.core.TestSession;
+import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.ScreenShot;
 import com.bughunt.domain.StepResult;
 import com.bughunt.domain.Test;
@@ -36,6 +37,10 @@ public class Report {
 	public void addReportStep(String description, String actualDesc, StepResult stepResult) {
 		if(screenShot!=null) {
 			String screenShotFile = screenShotPath + String.format("ScreenShot%d.jpg", ++screenShotNum);
+			if(ExecutionMode.PARALLELMULTICONFIG == TestSession.getExecutionMode()) {
+				String prefix = CommonUtil.getParallelConfigPrefix(test);
+				screenShotFile = screenShotPath + prefix + String.format("ScreenShot%d.jpg", ++screenShotNum);
+			}
 			if(TestSession.getScreenShotStepResults().contains(stepResult)) {
 				screenShot.takeScreenShot(screenShotFile);
 				test.addTestStep(description, actualDesc, stepResult, Optional.of(screenShotFile));
@@ -55,7 +60,7 @@ public class Report {
 			Path dir = Paths.get(screenShotPath);
 			try {
 				if(!Files.exists(dir)) {
-					Files.createDirectory(dir);
+					Files.createDirectories(dir);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -78,6 +83,10 @@ public class Report {
 		testObject.put("testObject", test);
 		String compiledHTML =  c.compile(tmplName).execute(testObject);
 		String reportName = test.getDirPath() + CommonUtil.getShortFileName(test.getName()) + ".html";
+		if(ExecutionMode.PARALLELMULTICONFIG == TestSession.getExecutionMode()) {
+			String prefix = CommonUtil.getParallelConfigPrefix(test);
+			reportName = test.getDirPath() + prefix +CommonUtil.getShortFileName(test.getName()) + ".html";
+		}
 		File file = new File(reportName);
 		try {
 			FileUtils.writeStringToFile(file, compiledHTML.toString());

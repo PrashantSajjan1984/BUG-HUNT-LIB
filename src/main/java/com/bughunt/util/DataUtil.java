@@ -23,13 +23,13 @@ public class DataUtil {
 	}
 	
 	private void setIterationMaps() {
-		if(testData.containsKey(1)) {
+		if(testData!=null && testData.containsKey(1)) {
 			iterationMaps = (Map<Integer, Map<String, String>>) testData.get(1);
 		}
 	}
 	
 	public void setIteration(int iteration) {
-		if(testData.containsKey(iteration)) {
+		if(testData!=null && testData.containsKey(iteration)) {
 			iterationMaps = (Map<Integer, Map<String, String>>) testData.get(iteration);
 		}
 	}

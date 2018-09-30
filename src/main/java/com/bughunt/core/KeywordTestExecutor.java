@@ -13,7 +13,7 @@ import com.bughunt.domain.Test;
 import com.bughunt.reports.Report;
 import com.bughunt.util.DataUtil;
 
-public class KeywordTestExecutor extends TestExecutor {
+public class KeywordTestExecutor extends Executor {
 
 	@Override
 	protected void callTestMethods(Test test) {
@@ -59,7 +59,8 @@ public class KeywordTestExecutor extends TestExecutor {
 		keywordClass = Class.forName(methodVO.getClassName());
 		constructor = keywordClass
 				.getConstructor(new Class[] { ParameterVO.class });
-		keywordObj = constructor.newInstance(new ParameterVO(report, dataUtil, test.getName(), test.getDirPath()));
+		ParameterVO parameterVO = new ParameterVO(report, dataUtil, test.getName(), test.getDirPath());
+		keywordObj = constructor.newInstance(parameterVO);
 		return keywordObj;
 	}
 	

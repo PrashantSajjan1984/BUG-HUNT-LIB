@@ -7,6 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.bughunt.config.BugHuntConfig;
+import com.bughunt.constants.BugHuntConstants;
+import com.bughunt.core.TestSession;
+import com.bughunt.domain.ExecutionMode;
+import com.bughunt.domain.Test;
+
 public class CommonUtil {
 
 	private CommonUtil() {
@@ -52,6 +58,25 @@ public class CommonUtil {
 	public static String getShortFileName(String fileName) {
 		fileName = fileName.replaceAll(" ", "_");
 		return fileName.length() < 80 ? fileName : fileName.substring(0, 80);
+	}
+	
+	public static int getIntegerValue(String intVal) {
+		int retVal = 0;
+		try {
+			retVal = Integer.parseInt(intVal);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		
+		return retVal;
+	}
+	
+	public static String getParallelConfigPrefix(Test test) {
+		String prefix = null;
+		if(ExecutionMode.PARALLELMULTICONFIG == TestSession.getExecutionMode()) {
+			 prefix = test.getParallelConfig().get(BugHuntConstants.REPORT_VALUE) + "_" + test.getParallelConfig().get(BugHuntConstants.ID) + "_";
+		}
+		return prefix;
 	}
 	
 }

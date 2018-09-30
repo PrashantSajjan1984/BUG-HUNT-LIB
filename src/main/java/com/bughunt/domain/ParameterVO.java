@@ -1,5 +1,7 @@
 package com.bughunt.domain;
 
+import java.util.Map;
+
 import com.bughunt.reports.Report;
 import com.bughunt.util.DataUtil;
 
@@ -9,12 +11,21 @@ public class ParameterVO {
 	private DataUtil dataUtil;
 	private String testName;
 	private String reportPath;
+	private Map<String, String> jsonConfigProps;
 	
 	public ParameterVO(Report report, DataUtil dataUtil, String testName, String reportPath) {
 		this.report = report;
 		this.dataUtil = dataUtil;
 		this.testName = testName;
 		this.reportPath = reportPath;
+	}
+	
+	public ParameterVO(Report report, DataUtil dataUtil, String testName, String reportPath, Map<String, String> jsonConfigProps) {
+		this.report = report;
+		this.dataUtil = dataUtil;
+		this.testName = testName;
+		this.reportPath = reportPath;
+		this.jsonConfigProps = jsonConfigProps;
 	}
 	
 	public Report getReport() {
@@ -31,5 +42,9 @@ public class ParameterVO {
 
 	public String getReportPath() {
 		return reportPath;
+	}
+
+	public Map<String, String> getJsonConfigProps() {
+		return jsonConfigProps;
 	}
 }

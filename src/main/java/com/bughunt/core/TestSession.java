@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.MethodVO;
 import com.bughunt.domain.StepResult;
 import com.bughunt.domain.Test;
@@ -18,6 +19,8 @@ public class TestSession {
 	private static Map<String, MethodVO> annotationMap;
 	private static EnumSet<StepResult> screenShotStepResults;
 	private static Map<Integer, Object> masterTestData;
+	private static Map<String, List<Test>> multiConfigTestMap;
+	private static ExecutionMode executionMode;
 	
 	private TestSession() {
 		
@@ -69,6 +72,22 @@ public class TestSession {
 
 	public static void setMasterTestData(Map<Integer, Object> masterTestData) {
 		TestSession.masterTestData = masterTestData;
+	}
+
+	public static Map<String, List<Test>> getMultiConfigTestMap() {
+		return multiConfigTestMap;
+	}
+
+	public static void setMultiConfigTestMap(Map<String, List<Test>> multiConfigTestMap) {
+		TestSession.multiConfigTestMap = multiConfigTestMap;
+	}
+
+	public static ExecutionMode getExecutionMode() {
+		return executionMode;
+	}
+
+	public static void setExecutionMode(ExecutionMode executionMode) {
+		TestSession.executionMode = executionMode;
 	}
 }
 

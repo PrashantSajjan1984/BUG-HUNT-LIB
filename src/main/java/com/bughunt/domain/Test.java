@@ -38,16 +38,38 @@ public class Test {
 	private int totalIteration;
 	private int currentIteration;
 	private boolean runMultiIteration = true;
+	private Map<String, String> propMap = null;
+	private Map<String, String> parallelConfig = null;
 	
 	public Test(String name, int id, Map<String, String> propMap) {
 		this.name = name;
 		this.id = id;
+		this.propMap = propMap;
 		props = new ArrayList<>();
 		addTCProps("Test Case Name", name);
 		addTCProps(BugHuntConstants.ENVIRONMENT, 
 				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
 		setReportProps(propMap);
-		
+		if(propMap.containsKey("RunIterations") && "No".equals(propMap.get("propMap"))) {
+			runMultiIteration = false;
+		}
+	}
+	
+	public Test(Test test, Map<String, String> parallelConfig) {
+		this.name = test.getName();
+		this.id = test.getId();
+		this.propMap = test.getPropMap();
+		this.parallelConfig = parallelConfig;
+		this.keywords = test.getKeywords();
+		this.dirPath = test.getDirPath();
+		this.isMultiIteration = test.isMultiIteration;
+		this.totalIteration = test.getTotalIteration();
+		this.runMultiIteration = test.isRunMultiIteration();
+		props = new ArrayList<>();
+		addTCProps("Test Case Name", name);
+		addTCProps(BugHuntConstants.ENVIRONMENT, 
+				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
+		setReportProps(propMap);
 		if(propMap.containsKey("RunIterations") && "No".equals(propMap.get("propMap"))) {
 			runMultiIteration = false;
 		}
@@ -116,7 +138,15 @@ public class Test {
 			isMultiIteration = true;
 		}
 	}
-
+	
+	public Map<String, String> getPropMap() {
+		return propMap;
+	}
+	
+	public Map<String, String> getParallelConfig() {
+		return parallelConfig;
+	}
+	
 	private void addTCProps(String label, String value) {
 		Map<String, String> propMap = new HashMap<>();
 		propMap.put("label", label);
@@ -156,8 +186,17 @@ public class Test {
 	
 	private void setReportProps(Map<String, String> propMap) {
 		for(String prop: TestSession.getReportProps()) {
-			if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))) {
-				addTCProps(prop, propMap.get(prop));
+			if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() || null == parallelConfig) {
+				if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))
+						) {
+					addTCProps(prop, propMap.get(prop));
+				} 
+			} else {
+				if(parallelConfig.containsKey(prop) && StringUtils.isNotBlank(parallelConfig.get(prop))) {
+					addTCProps(prop, parallelConfig.get(prop));
+				} else if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))) {
+					addTCProps(prop, propMap.get(prop));
+				} 
 			}
 		}
 	}
@@ -206,7 +245,7 @@ public class Test {
 		Path dir = Paths.get(dirPath);
 		try {
 			if(!Files.exists(dir)) {
-				Files.createDirectory(dir);
+				Files.createDirectories(dir);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

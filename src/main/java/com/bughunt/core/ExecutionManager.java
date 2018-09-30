@@ -1,17 +1,10 @@
 package com.bughunt.core;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map.Entry;
 
 import com.bughunt.config.BugHuntConfig;
 import com.bughunt.constants.BugHuntConstants;
-import com.bughunt.domain.MethodVO;
-import com.bughunt.domain.Test;
 import com.bughunt.exception.InCompleteSettingsException;
 import com.bughunt.keywordmanager.ExcelKeywordManager;
 import com.bughunt.keywordmanager.KeywordManager;
@@ -59,6 +52,7 @@ public class ExecutionManager {
 		setTestKeywords();
 		setMasterTestData();
 		createExecutionReportFolder();
+		setParallelConfig();
 		executeTests();
 	}
 
@@ -80,6 +74,18 @@ public class ExecutionManager {
 			testManager = new ExcelTestManager();
 		}
 		testManager.setTestsToExecute();
+	}
+
+	private void setParallelConfig() {
+		TestManager testManager = null;
+		if(BugHuntConstants.EXCEL.toLowerCase().
+				equals(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_MANAGER_FORMAT).toLowerCase())) {
+			testManager = new ExcelTestManager();
+		}
+		if(BugHuntConstants.PARALLEL_MULTI_CONFIG.toLowerCase().equals(
+				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
+			testManager.setParallelConfigTests();
+		}
 	}
 	
 	private void setTestKeywords() {
@@ -111,7 +117,9 @@ public class ExecutionManager {
 	}
 	
 	private void executeTests() {
-		TestExecutor testExecutor = new KeywordTestExecutor();
-		testExecutor.executeTests();
+		TestExecutor testExecutor = new TestExecutor();
+		// testExecutor.executeTests();
+		// testExecutor.executeTestsInParallel();
+		testExecutor.executeTestsForParallelConfig();
 	}
 }

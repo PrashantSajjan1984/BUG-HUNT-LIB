@@ -1,20 +1,29 @@
 package com.bughunt.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.bughunt.constants.BugHuntConstants;
 import com.bughunt.core.TestSession;
+import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.StepResult;
 import com.bughunt.util.CommonUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BugHuntConfig {
 
@@ -30,6 +39,7 @@ public class BugHuntConfig {
 	private boolean configSet = false;
 	private String envURL;
 	private JSONObject urlJSONObj;
+	private List<Map<String, String>> parallelConfig;
 	
 	private BugHuntConfig() {
 		
@@ -113,12 +123,11 @@ public class BugHuntConfig {
 		dataPath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.DATA_PATH;
 		reportsTemplatePath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_TEMPLATE_PATH;
 		reportsPath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_PATH;
+		setCurrentExecutionMode();
 		setReportProps();
 		setScreenShotEnum();
 		setURLJsonObject();
 	}
-	
-	
 
 	private void setFWProps() {
 		bugHuntProps = new Properties();
@@ -141,7 +150,12 @@ public class BugHuntConfig {
 	}
 	
 	private void setReportProps() {
-		String reportProps = getBugHuntProperty(BugHuntConstants.REPORT_PROPERTIES);
+		String reportProps = null;
+		if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode()) {
+			reportProps = getBugHuntProperty(BugHuntConstants.REPORT_PROPERTIES);
+		} else {
+			reportProps = getBugHuntProperty(BugHuntConstants.PARALLEL_MULTI_CONFIG_PROPS);
+		}
 		String[] propsSplit = reportProps.split(",");
 		TestSession.setReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
 	}
@@ -194,5 +208,29 @@ public class BugHuntConfig {
 			url = "";
 		}
 		return url;
+	}
+	
+	public void setCurrentExecutionMode() {
+		String executionMode = getBugHuntProperty(BugHuntConstants.EXECUTION_MODE);
+		ExecutionMode mode = ExecutionMode.valueOf(executionMode.toUpperCase());
+		TestSession.setExecutionMode(mode);
+	}
+	
+	public List<Map<String,String>> getParallelConfigMap() {
+		if(parallelConfig == null) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+			    File file = new File(baseFWPath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + "ParallelConfig.json");
+			    String json = FileUtils.readFileToString(file);
+			    parallelConfig = mapper.readValue(json, new TypeReference<List<Map<String, String>>>(){});
+			    int id = 0;
+			    for(Map<String,String> map:parallelConfig) {
+			    		map.put(BugHuntConstants.ID, String.valueOf(++id));
+			    }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return parallelConfig;
 	}
 }
