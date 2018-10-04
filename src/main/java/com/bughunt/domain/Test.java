@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ public class Test {
 	private List<Map<String, Object>> multiIterationMaps = null;
 	private List<List<Step>> multiIterationSteps = null;
 	private List<Map<String, String>> props = null;
+	private List<Map<String, String>> summaryProps = null;
 	private OverALLStatus overAllStatus = OverALLStatus.NOT_STARTED;
 	private List<MethodVO> keywords;
 	private String dirPath;
@@ -40,16 +42,19 @@ public class Test {
 	private boolean runMultiIteration = true;
 	private Map<String, String> propMap = null;
 	private Map<String, String> parallelConfig = null;
+	private int slNo = 0;
 	
 	public Test(String name, int id, Map<String, String> propMap) {
 		this.name = name;
 		this.id = id;
 		this.propMap = propMap;
 		props = new ArrayList<>();
+		summaryProps = new ArrayList<>();
 		addTCProps("Test Case Name", name);
 		addTCProps(BugHuntConstants.ENVIRONMENT, 
 				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
 		setReportProps(propMap);
+		setSummaryReportProps(propMap);
 		if(propMap.containsKey("RunIterations") && "No".equals(propMap.get("propMap"))) {
 			runMultiIteration = false;
 		}
@@ -146,12 +151,19 @@ public class Test {
 	public Map<String, String> getParallelConfig() {
 		return parallelConfig;
 	}
-	
+
 	private void addTCProps(String label, String value) {
 		Map<String, String> propMap = new HashMap<>();
 		propMap.put("label", label);
 		propMap.put("value",value);
 		props.add(propMap);
+	}
+	
+	private void addSummaryReportProps(String label, String value) {
+		Map<String, String> propMap = new HashMap<>();
+		propMap.put("label", label);
+		propMap.put("value",value);
+		summaryProps.add(propMap);
 	}
 	
 	public void addStepsAfterIteration() {
@@ -196,6 +208,23 @@ public class Test {
 					addTCProps(prop, parallelConfig.get(prop));
 				} else if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))) {
 					addTCProps(prop, propMap.get(prop));
+				} 
+			}
+		}
+	}
+	
+	private void setSummaryReportProps(Map<String, String> propMap) {
+		for(String prop: TestSession.getSummaryReportProps()) {
+			if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() || null == parallelConfig) {
+				if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))
+						) {
+					addSummaryReportProps(prop, propMap.get(prop));
+				} 
+			} else {
+				if(parallelConfig.containsKey(prop) && StringUtils.isNotBlank(parallelConfig.get(prop))) {
+					addSummaryReportProps(prop, parallelConfig.get(prop));
+				} else if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))) {
+					addSummaryReportProps(prop, propMap.get(prop));
 				} 
 			}
 		}
@@ -326,7 +355,7 @@ public class Test {
 		
 	}
 	
-	private enum OverALLStatus {
+	public enum OverALLStatus {
 		NOT_STARTED, INPROGRESS, PASSED, FAILED
 	}
 

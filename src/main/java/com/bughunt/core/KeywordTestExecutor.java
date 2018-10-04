@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.bughunt.constants.BugHuntConstants;
+import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.MethodVO;
 import com.bughunt.domain.ParameterVO;
 import com.bughunt.domain.Test;
@@ -22,9 +23,10 @@ public class KeywordTestExecutor extends Executor {
 		test.createReportFolder();
 		Report report = new Report(test);
 		DataUtil dataUtil = new DataUtil(test);
-		callBeforeAfterMethods(BugHuntConstants.BEFORE_ANNOTATION, test, report, dataUtil);
 		int totalIteration = test.isRunMultiIteration() ? dataUtil.getTotalIteration() : 1;
 		test.setTotalIteration(totalIteration);
+		callBeforeAfterMethods(BugHuntConstants.BEFORE_ANNOTATION, test, report, dataUtil);
+		
 		for(int i=1; i<=totalIteration;i++) {
 			instanceMap = new HashMap<>();
 			dataUtil.setIteration(i);
@@ -59,7 +61,12 @@ public class KeywordTestExecutor extends Executor {
 		keywordClass = Class.forName(methodVO.getClassName());
 		constructor = keywordClass
 				.getConstructor(new Class[] { ParameterVO.class });
-		ParameterVO parameterVO = new ParameterVO(report, dataUtil, test.getName(), test.getDirPath());
+		ParameterVO parameterVO = null;
+		if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode()) {
+			parameterVO = new ParameterVO(report, dataUtil, test.getName(), test.getDirPath());
+		} else {
+			parameterVO = new ParameterVO(report, dataUtil, test.getName(), test.getDirPath(), getMultiConfigProps());
+		}
 		keywordObj = constructor.newInstance(parameterVO);
 		return keywordObj;
 	}

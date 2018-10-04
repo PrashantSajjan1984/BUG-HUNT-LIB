@@ -12,6 +12,8 @@ public class BugHuntConstants {
 	public static final String SCREEN_SHOT_PATH = "Screenshot/";
 	
 	public static final String REPORT_TEMPLATE_NAME = "Report.mustache";
+	public static final String SUMMARY_REPORT_TEMPLATE_NAME = "SummaryReport.mustache";
+	public static final String MULTI_CONFIG_SUMMARY_REPORT_TEMPLATE_NAME = "MultiConfigSummaryReport.mustache";
 	
 	// bug-hunt properties constants
 	public static final String ENVIRONMENT = "Environment";
@@ -21,6 +23,7 @@ public class BugHuntConstants {
 	public static final String TEST_MANAGER_FORMAT = "TestManagerFormat";
 	public static final String TEST_DATA_FORMAT = "TestDataFormat";
 	public static final String REPORT_PROPERTIES = "ReportProperties";
+	public static final String SUMMARY_REPORT_PROPERTIES = "SummaryReportProperties";
 	public static final String PARALLEL_MULTI_CONFIG_PROPS = "ParallelMultiConfigReportProperties";
 	public static final String SCREEN_SHOT_CLASS = "ScreenShotClass";
 	public static final String PASS_SCREENSHOT = 	"PassScreenShot";

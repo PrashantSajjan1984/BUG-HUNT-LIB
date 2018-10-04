@@ -16,6 +16,7 @@ public class TestSession {
 	private static List<Test> testCases;
 	private static Map<String, MethodVO> keywordMap;
 	private static Set<String> reportProps;
+	private static Set<String> summaryReportProps;
 	private static Map<String, MethodVO> annotationMap;
 	private static EnumSet<StepResult> screenShotStepResults;
 	private static Map<Integer, Object> masterTestData;
@@ -48,6 +49,14 @@ public class TestSession {
 	
 	public static void setReportProps(Set<String> reportProps) {
 		TestSession.reportProps = reportProps;
+	}
+	
+	public static Set<String> getSummaryReportProps() {
+		return summaryReportProps;
+	}
+
+	public static void setSummaryReportProps(Set<String> summaryReportProps) {
+		TestSession.summaryReportProps = summaryReportProps;
 	}
 
 	public static Map<String, MethodVO> getAnnotationMap() {

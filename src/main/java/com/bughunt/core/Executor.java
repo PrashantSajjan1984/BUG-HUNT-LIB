@@ -6,16 +6,16 @@ import com.bughunt.domain.Test;
 
 public abstract class Executor {
 	
-	private Map<String, String> props;
+	private Map<String, String> multiConfigProps;
 	
-	public void setProps(Map<String, String> props) {
-		this.props = props;
+	public void setProps(Map<String, String> multiConfigProps) {
+		this.multiConfigProps = multiConfigProps;
 	}
 	
-	public Map<String, String> getProps() {
-		return props;
+	public Map<String, String> getMultiConfigProps() {
+		return multiConfigProps;
 	}
-	
+
 	protected abstract void callTestMethods(Test test);
 	
 }

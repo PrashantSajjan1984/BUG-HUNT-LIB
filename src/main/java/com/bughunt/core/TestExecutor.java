@@ -20,9 +20,11 @@ public class TestExecutor {
 	Executor executor;
 	
 	public void executeTests() {
+		SummaryReport summaryRpt = new SummaryReport();
 		executor = new KeywordTestExecutor();
 		for(Test test: TestSession.getTestCases()) {
 			executor.callTestMethods(test);
+			summaryRpt.generateReport(test);
 		} 
 	}
 	

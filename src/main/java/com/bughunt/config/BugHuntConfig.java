@@ -125,6 +125,7 @@ public class BugHuntConfig {
 		reportsPath = basePath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.REPORT_PATH;
 		setCurrentExecutionMode();
 		setReportProps();
+		setSummaryReportProps();
 		setScreenShotEnum();
 		setURLJsonObject();
 	}
@@ -158,6 +159,13 @@ public class BugHuntConfig {
 		}
 		String[] propsSplit = reportProps.split(",");
 		TestSession.setReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
+	}
+	
+	private void setSummaryReportProps() {
+		String reportProps = null;
+		reportProps = getBugHuntProperty(BugHuntConstants.SUMMARY_REPORT_PROPERTIES);
+		String[] propsSplit = reportProps.split(",");
+		TestSession.setSummaryReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
 	}
 	
 	private void setScreenShotEnum() {
