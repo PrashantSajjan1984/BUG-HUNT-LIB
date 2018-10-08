@@ -14,6 +14,7 @@ public class BugHuntConstants {
 	public static final String REPORT_TEMPLATE_NAME = "Report.mustache";
 	public static final String SUMMARY_REPORT_TEMPLATE_NAME = "SummaryReport.mustache";
 	public static final String MULTI_CONFIG_SUMMARY_REPORT_TEMPLATE_NAME = "MultiConfigSummaryReport.mustache";
+	public static final String MULTI_CONFIG_REPORT_TEMPLATE_NAME = "MultiConfigReport.mustache";
 	
 	// bug-hunt properties constants
 	public static final String ENVIRONMENT = "Environment";
@@ -37,9 +38,18 @@ public class BugHuntConstants {
 	
 	public static final String PARALLEL_MULTI_CONFIG = "ParallelMultiConfig";
 	
-	public static final String REPORT_VALUE = "ReportValue";
 	public static final String ID = "id";
 	
+	public static final String TEST_NAME = "Test Case Name";
+	public static final String NO_OF_STEPS_PASSED = "No of Steps Passed";
+	public static final String NO_OF_STEPS_FAILED = "No of Steps Failed";
+	public static final String NO_OF_STEPS_WITH_WARNINGS = "No of Steps with Warnings";
+	public static final String RESULT = "Result";
+	public static final String PASS = "PASS";
+	public static final String FAIL = "FAIL";
+	public static final String EXECUTION_TIME = "Execution Time";
+	public static final String REPORT_LABEL = "ReportLabel";
+	public static final String REPORT_VALUE = "ReportValue";
 	
 	//TestManager Columns
 	

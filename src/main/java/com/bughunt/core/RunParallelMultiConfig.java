@@ -38,7 +38,8 @@ public class RunParallelMultiConfig implements Runnable {
 	        t.start();
 		}
 		awaitTasksDone();
-		summaryReport.generateParallelConfigReport(test);
+		summaryReport.generateMultiConfigReport(test);
+		summaryReport.generateParallelConfigSummaryReport(test);
 	}
 
 	protected void awaitTasksDone() {

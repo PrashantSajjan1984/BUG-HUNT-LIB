@@ -50,7 +50,7 @@ public class Test {
 		this.propMap = propMap;
 		props = new ArrayList<>();
 		summaryProps = new ArrayList<>();
-		addTCProps("Test Case Name", name);
+		addTCProps(BugHuntConstants.TEST_NAME, name);
 		addTCProps(BugHuntConstants.ENVIRONMENT, 
 				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
 		setReportProps(propMap);
@@ -240,18 +240,18 @@ public class Test {
 		} else {
 			setMultiIterationStatus();
 		}
-		addTCProps("No of Steps Passed", String.valueOf(stepsPassed));
-		addTCProps("No of Steps Failed", String.valueOf(stepsFailed));
+		addTCProps(BugHuntConstants.NO_OF_STEPS_PASSED, String.valueOf(stepsPassed));
+		addTCProps(BugHuntConstants.NO_OF_STEPS_FAILED, String.valueOf(stepsFailed));
 		if(stepsWithWarning > 0) {
-			addTCProps("No of Steps with Warnings", String.valueOf(stepsWithWarning));
+			addTCProps(BugHuntConstants.NO_OF_STEPS_WITH_WARNINGS, String.valueOf(stepsWithWarning));
 		}
-		addTCProps("Execution Time", String.valueOf(stepsWithWarning));
+		addTCProps(BugHuntConstants.EXECUTION_TIME, String.valueOf(stepsWithWarning));
 		if(stepsFailed == 0) {
 			setOverAllStatus(OverALLStatus.PASSED);
-			addTCProps("Result", "PASS");
+			addTCProps(BugHuntConstants.RESULT, BugHuntConstants.PASS);
 		} else {
 			setOverAllStatus(OverALLStatus.FAILED);
-			addTCProps("Result", "FAIL");
+			addTCProps(BugHuntConstants.RESULT, BugHuntConstants.FAIL);
 		}
 	}
 
@@ -352,7 +352,6 @@ public class Test {
 					+ stepPassed + ", stepFailed=" + stepFailed + ", stepWithWarning=" + stepWithWarning
 					+ ", screenShotPath=" + screenShotPath + "]";
 		}
-		
 	}
 	
 	public enum OverALLStatus {
