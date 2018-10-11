@@ -1,6 +1,7 @@
 package com.bughunt.core;
 
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,9 @@ public class TestSession {
 	private static Map<Integer, Object> masterTestData;
 	private static Map<String, List<Test>> multiConfigTestMap;
 	private static ExecutionMode executionMode;
+	private static LocalDateTime startExecutionTime;
+	private static Map<String, String> commonData;
+	private static int reRunCount;
 	
 	private TestSession() {
 		
@@ -97,6 +101,30 @@ public class TestSession {
 
 	public static void setExecutionMode(ExecutionMode executionMode) {
 		TestSession.executionMode = executionMode;
+	}
+
+	public static LocalDateTime getStartExecutionTime() {
+		return startExecutionTime;
+	}
+
+	public static void setStartExecutionTime(LocalDateTime startExecutionTime) {
+		TestSession.startExecutionTime = startExecutionTime;
+	}
+
+	public static Map<String, String> getCommonData() {
+		return commonData;
+	}
+
+	public static void setCommonData(Map<String, String> commonData) {
+		TestSession.commonData = commonData;
+	}
+
+	public static int getReRunCount() {
+		return reRunCount;
+	}
+
+	public static void setReRunCount(int reRunCount) {
+		TestSession.reRunCount = reRunCount;
 	}
 }
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +44,12 @@ public class Test {
 	private Map<String, String> propMap = null;
 	private Map<String, String> parallelConfig = null;
 	private int slNo = 0;
+	private LocalDateTime startTime;
+	private LocalDateTime endTime; 
+	private String executionTime;
+	private String folderName;
+	private String summaryRptLink;
+	
 	
 	public Test(String name, int id, Map<String, String> propMap) {
 		this.name = name;
@@ -130,7 +137,6 @@ public class Test {
 		stepNo = 0;
 	}
 
-	
 	public boolean isRunMultiIteration() {
 		return runMultiIteration;
 	}
@@ -144,6 +150,14 @@ public class Test {
 		}
 	}
 	
+	public LocalDateTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime() {
+		this.startTime = LocalDateTime.now();
+	}
+
 	public Map<String, String> getPropMap() {
 		return propMap;
 	}
@@ -152,17 +166,58 @@ public class Test {
 		return parallelConfig;
 	}
 
+	public List<Map<String, String>> getProps() {
+		return props;
+	}
+	
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(LocalDateTime endTime) {
+		this.endTime = endTime;
+	}
+
+	
+	public String getExecutionTime() {
+		return executionTime;
+	}
+
+	public void setExecutionTime(String executionTime) {
+		this.executionTime = executionTime;
+	}
+	
+	public String getFolderName() {
+		return folderName;
+	}
+
+	public String getSummaryRptLink() {
+		return summaryRptLink;
+	}
+
+	public void setSummaryRptLink(String summaryRptLink) {
+		this.summaryRptLink = summaryRptLink;
+	}
+
+	public int getSlNo() {
+		return slNo;
+	}
+
+	public void setSlNo(int slNo) {
+		this.slNo = slNo;
+	}
+
 	private void addTCProps(String label, String value) {
 		Map<String, String> propMap = new HashMap<>();
-		propMap.put("label", label);
-		propMap.put("value",value);
+		propMap.put(BugHuntConstants.LABEL, label);
+		propMap.put(BugHuntConstants.VALUE,value);
 		props.add(propMap);
 	}
 	
 	private void addSummaryReportProps(String label, String value) {
 		Map<String, String> propMap = new HashMap<>();
-		propMap.put("label", label);
-		propMap.put("value",value);
+		propMap.put(BugHuntConstants.LABEL, label);
+		propMap.put(BugHuntConstants.VALUE,value);
 		summaryProps.add(propMap);
 	}
 	
@@ -270,7 +325,8 @@ public class Test {
 	
 	public void createReportFolder() {
 		String reportPath = BugHuntConfig.instance().getExecutionReportPath();
-		dirPath = reportPath + id + "_" + CommonUtil.getShortFileName(name);
+		folderName = id + "_" + CommonUtil.getShortFileName(name);
+		dirPath = reportPath + folderName;
 		Path dir = Paths.get(dirPath);
 		try {
 			if(!Files.exists(dir)) {
@@ -361,8 +417,15 @@ public class Test {
 	@Override
 	public String toString() {
 		return "Test [id=" + id + ", name=" + name + ", stepsPassed=" + stepsPassed + ", stepsFailed=" + stepsFailed
-				+ ", stepsWithWarning=" + stepsWithWarning + ", stepNo=" + stepNo + ", steps=" + steps + ", props="
-				+ props + ", overAllStatus=" + overAllStatus + ", keywords=" + keywords + "]";
+				+ ", stepsWithWarning=" + stepsWithWarning + ", stepNo=" + stepNo + ", steps=" + steps
+				+ ", multiIterationMaps=" + multiIterationMaps + ", multiIterationSteps=" + multiIterationSteps
+				+ ", props=" + props + ", summaryProps=" + summaryProps + ", overAllStatus=" + overAllStatus
+				+ ", keywords=" + keywords + ", dirPath=" + dirPath + ", isMultiIteration=" + isMultiIteration
+				+ ", totalIteration=" + totalIteration + ", currentIteration=" + currentIteration
+				+ ", runMultiIteration=" + runMultiIteration + ", propMap=" + propMap + ", parallelConfig="
+				+ parallelConfig + ", slNo=" + slNo + ", startTime=" + startTime + ", endTime=" + endTime
+				+ ", executionTime=" + executionTime + ", folderName=" + folderName + ", summaryRptLink="
+				+ summaryRptLink + "]";
 	}
 	
 }

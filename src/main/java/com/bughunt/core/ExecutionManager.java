@@ -1,5 +1,7 @@
 package com.bughunt.core;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -9,6 +11,7 @@ import com.bughunt.exception.InCompleteSettingsException;
 import com.bughunt.keywordmanager.ExcelKeywordManager;
 import com.bughunt.keywordmanager.KeywordManager;
 import com.bughunt.testmanager.ExcelTestManager;
+import com.bughunt.testmanager.JsonTestManager;
 import com.bughunt.testmanager.TestManager;
 import com.bughunt.util.CommonUtil;
 import com.bughunt.util.ExcelUtil;
@@ -34,6 +37,7 @@ public class ExecutionManager {
 		if(execInProgress) {
 			return;
 		}
+		TestSession.setStartExecutionTime(LocalDateTime.now());
 		execInProgress = true;
 		try {
 			configureAndTriggerExecution();	
@@ -48,12 +52,15 @@ public class ExecutionManager {
 	private void configureAndTriggerExecution() {
 		BugHuntConfig.instance().setConfigPaths();
 		persistMethods();
+		ExcelUtil.setCommonData();
 		setTestsToExecute();
+		ExcelUtil.deleteFailedTestsExcel();
 		setTestKeywords();
 		setMasterTestData();
 		createExecutionReportFolder();
 		setParallelConfig();
 		executeTests();
+		ExcelUtil.addFailedTCToExcel();
 	}
 
 	private void persistMethods() {
@@ -69,11 +76,24 @@ public class ExecutionManager {
 
 	private void setTestsToExecute() {
 		TestManager testManager = null;
-		if(BugHuntConstants.EXCEL.toLowerCase().
-				equals(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_MANAGER_FORMAT).toLowerCase())) {
+		boolean testSetSuccessful = false;
+		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
+		String fileName = bugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
+		if("true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests")) &&
+				!Files.exists(Paths.get(fileName))) {
+			ExcelTestManager excelManager = new ExcelTestManager();
+			excelManager.setTestHeaderColumnAndWidth();	
+			testManager = new JsonTestManager();
+			testSetSuccessful = testManager.setTestsToExecute();
+		} else {
 			testManager = new ExcelTestManager();
+			testSetSuccessful = testManager.setTestsToExecute();
+			if(!testSetSuccessful && 
+					"true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
+				testManager = new JsonTestManager();
+				testManager.setTestsToExecute();
+			}
 		}
-		testManager.setTestsToExecute();
 	}
 
 	private void setParallelConfig() {
@@ -118,8 +138,19 @@ public class ExecutionManager {
 	
 	private void executeTests() {
 		TestExecutor testExecutor = new TestExecutor();
-		// testExecutor.executeTests();
-		// testExecutor.executeTestsInParallel();
-		testExecutor.executeTestsForParallelConfig();
+		switch(TestSession.getExecutionMode()) {
+		case PARALLEL:
+				testExecutor.executeTestsInParallel();
+			break;
+		case PARALLELMULTICONFIG:
+				testExecutor.executeTestsForParallelConfig();
+			break;
+		case SEQUENTIAL:
+				testExecutor.executeTests();
+			break;
+		default:
+				testExecutor.executeTests();
+			break;
+		}
 	}
 }

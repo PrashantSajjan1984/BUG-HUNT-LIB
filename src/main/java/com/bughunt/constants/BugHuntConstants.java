@@ -26,17 +26,21 @@ public class BugHuntConstants {
 	public static final String REPORT_PROPERTIES = "ReportProperties";
 	public static final String SUMMARY_REPORT_PROPERTIES = "SummaryReportProperties";
 	public static final String PARALLEL_MULTI_CONFIG_PROPS = "ParallelMultiConfigReportProperties";
+	public static final String FAILED_TESTS_JSON= "failedTests.json";
+	public static final String FAILED_TESTS_EXCEL= "/FailedTests.xlsx";
 	public static final String SCREEN_SHOT_CLASS = "ScreenShotClass";
 	public static final String PASS_SCREENSHOT = 	"PassScreenShot";
 	public static final String FAIL_SCREENSHOT = 	"FailScreenShot";
 	public static final String WARNING_SCREENSHOT = 	"WarningScreenShot";
 	public static final String THREAD_COUNT = "ThreadCount";
 	public static final String EXECUTION_MODE = "ExecutionMode";
+	public static final String RE_RUN_COUNT = "ReRunCount";
 	
 	public static final String BEFORE_ANNOTATION ="Before";
 	public static final String AFTER_ANNOTATION ="After";
 	
 	public static final String PARALLEL_MULTI_CONFIG = "ParallelMultiConfig";
+	public static final String COMMON_EXCEL_DATA = "CommonData";
 	
 	public static final String ID = "id";
 	
@@ -50,6 +54,15 @@ public class BugHuntConstants {
 	public static final String EXECUTION_TIME = "Execution Time";
 	public static final String REPORT_LABEL = "ReportLabel";
 	public static final String REPORT_VALUE = "ReportValue";
+	public static final String DATE_TIME = "Date & Time";
+	public static final String NO_OF_TESTS_PASSED = "No of Tests Passed";
+	public static final String NO_OF_TESTS_FAILED = "No of Tests Failed";
+	
+	public static final String LABEL = "label";
+	public static final String VALUE = "value";
+
+	public static final String EXECUTE = "Execute";
+	public static final String TEST_CASE_NAME ="Test Case Name";
 	
 	//TestManager Columns
 	

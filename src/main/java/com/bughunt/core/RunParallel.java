@@ -16,8 +16,8 @@ public class RunParallel implements Runnable {
 	@Override
 	public void run() {
 		Executor executor = new KeywordTestExecutor();
-		executor.callTestMethods(test);
-		summaryReport.generateReport(test);
+		executor.executeTest(test);
+		summaryReport.generateReport();
 	}
 
 }

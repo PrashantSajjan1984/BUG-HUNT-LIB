@@ -11,7 +11,7 @@ import com.bughunt.domain.Test;
 import com.bughunt.exception.InCompleteSettingsException;
 
 public abstract class TestManager {
-	public abstract void setTestsToExecute();
+	public abstract boolean setTestsToExecute();
 	public abstract String getTestManagerColumnVal(String columnName, int rowNum);
 	
 	public void setParallelConfigTests() {

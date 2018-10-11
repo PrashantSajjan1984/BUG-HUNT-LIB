@@ -47,7 +47,6 @@ public class DataUtil {
 		} else {
 			keywordMap.put(keyword, 1);
 		}
-		
 		if(null!=iterationMaps && iterationMaps.containsKey(subIteration)) {
 			dataMap = iterationMaps.get(subIteration);
 		}
@@ -71,8 +70,19 @@ public class DataUtil {
 	}
 	
 	public String getTestManagerColumnVal(String columnName) {
-		ExcelTestManager excelTestManager = new ExcelTestManager();
-		return excelTestManager.getTestManagerColumnVal(columnName, test.getId());
+		String columnData = "";
+		if(test.getPropMap().containsKey(columnName)) {
+			columnData = test.getPropMap().get(columnName);
+		}
+		return columnData;
+	}
+	
+	public String getCommonData(String key) {
+		String commonData = "";
+		if(TestSession.getCommonData().containsKey(key)) {
+			commonData =  TestSession.getCommonData().get(key);
+		}
+		return commonData;
 	}
 	
 }

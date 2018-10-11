@@ -23,8 +23,8 @@ public class TestExecutor {
 		SummaryReport summaryRpt = new SummaryReport();
 		executor = new KeywordTestExecutor();
 		for(Test test: TestSession.getTestCases()) {
-			executor.callTestMethods(test);
-			summaryRpt.generateReport(test);
+			executor.executeTest(test);
+			summaryRpt.generateReport();
 		} 
 	}
 	

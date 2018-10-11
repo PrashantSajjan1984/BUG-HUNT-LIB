@@ -31,7 +31,7 @@ public class RunParallelMultiConfig implements Runnable {
                 public void run() {
                 		Executor executor = new KeywordTestExecutor();
                 		executor.setProps(configTest.getParallelConfig());
-                		executor.callTestMethods(configTest);
+                		executor.executeTest(configTest);
                 }
             });
 			mWorkerThreads.add (t);
@@ -39,7 +39,7 @@ public class RunParallelMultiConfig implements Runnable {
 		}
 		awaitTasksDone();
 		summaryReport.generateMultiConfigReport(test);
-		summaryReport.generateParallelConfigSummaryReport(test);
+		summaryReport.generateParallelConfigSummaryReport();
 	}
 
 	protected void awaitTasksDone() {

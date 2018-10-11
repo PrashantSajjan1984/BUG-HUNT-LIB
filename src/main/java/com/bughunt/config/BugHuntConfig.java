@@ -128,6 +128,7 @@ public class BugHuntConfig {
 		setSummaryReportProps();
 		setScreenShotEnum();
 		setURLJsonObject();
+		setReRunCount();
 	}
 
 	private void setFWProps() {
@@ -222,6 +223,17 @@ public class BugHuntConfig {
 		String executionMode = getBugHuntProperty(BugHuntConstants.EXECUTION_MODE);
 		ExecutionMode mode = ExecutionMode.valueOf(executionMode.toUpperCase());
 		TestSession.setExecutionMode(mode);
+	}
+	
+	private void setReRunCount() {
+		String reRunCountVal = getBugHuntProperty(BugHuntConstants.RE_RUN_COUNT);
+		int reRunCount = 0;
+		try {
+			reRunCount = Integer.parseInt(reRunCountVal);
+		} catch(NumberFormatException ex) {
+			ex.printStackTrace();
+		}
+		TestSession.setReRunCount(reRunCount);
 	}
 	
 	public List<Map<String,String>> getParallelConfigMap() {

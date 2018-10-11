@@ -6,12 +6,17 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.bughunt.config.BugHuntConfig;
 import com.bughunt.constants.BugHuntConstants;
 import com.bughunt.core.TestSession;
 import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.Test;
+import com.bughunt.domain.Test.OverALLStatus;
 
 public class CommonUtil {
 
@@ -79,4 +84,13 @@ public class CommonUtil {
 		return prefix;
 	}
 	
+	public static String getExecutionDateTime() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM, yyyy hh:mm:ss a");
+        return LocalDateTime.now().format(formatter);
+	}
+	
+	public static List<Test> getTestsCompleted() {
+		return TestSession.getTestCases().stream().filter(t->t.getOverAllStatus()==(OverALLStatus.PASSED)
+				|| t.getOverAllStatus()==(OverALLStatus.FAILED)).collect(Collectors.toList());
+	}
 }

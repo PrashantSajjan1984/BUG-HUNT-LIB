@@ -28,10 +28,12 @@ import com.bughunt.util.ExcelUtil;
 
 public class ExcelTestManager extends TestManager {
 
-	private static Map<String, Integer> headerMap;
+	public static Map<String, Integer> columnNameMap;
+	public static Map<Integer, Integer> columnWidth;
 	List<Test> tests = null;
 	@Override
-	public void setTestsToExecute() {
+	public boolean setTestsToExecute() {
+		boolean setTestSucessful = true;
 		Workbook workBook = null;
 		tests = new ArrayList<>();
 		try {
@@ -42,10 +44,12 @@ public class ExcelTestManager extends TestManager {
 			Row row = (Row) rows.next();
 			Cell cell;
 			Iterator<?> cells = row.cellIterator();
-			headerMap = new LinkedHashMap<>();
+			columnNameMap = new LinkedHashMap<>();
+			columnWidth = new LinkedHashMap<>();
 			while (cells.hasNext()) {
 				cell = (Cell) cells.next();
-				headerMap.put(cell.getStringCellValue(), cell.getColumnIndex());				
+				columnNameMap.put(cell.getStringCellValue(), cell.getColumnIndex());	
+				columnWidth.put(cell.getColumnIndex(), sheet.getColumnWidth(cell.getColumnIndex()));
 			}
 			// verifyRunManagerColumns(ExecutionSession.runManagerColumnMap);
 			int testManagerRowNo = 0;
@@ -53,15 +57,15 @@ public class ExcelTestManager extends TestManager {
 				row = (Row) rows.next();
 				testManagerRowNo++;
 				tcName = "";
-				if(!ExcelUtil.getCellVal(row, headerMap.get(TestManagerColumns.EXECUTE.getName())).equalsIgnoreCase("Yes")) {
-					tcName = ExcelUtil.getCellVal(row, headerMap.get(TestManagerColumns.TEST_CASE_NAME.getName()));
+				if(!ExcelUtil.getCellVal(row, columnNameMap.get(TestManagerColumns.EXECUTE.getName())).equalsIgnoreCase("Yes")) {
+					tcName = ExcelUtil.getCellVal(row, columnNameMap.get(TestManagerColumns.TEST_CASE_NAME.getName()));
 					if(!tcName.isEmpty()) {						
 						continue;						
 					} else {
 						break;
 					}				
 				}
-				tcName = ExcelUtil.getCellVal(row, headerMap.get(TestManagerColumns.TEST_CASE_NAME.getName()));
+				tcName = ExcelUtil.getCellVal(row, columnNameMap.get(TestManagerColumns.TEST_CASE_NAME.getName()));
 				if(StringUtils.isNotEmpty(tcName)) {
 					addTestsToTestSession(row, tcName, testManagerRowNo);
 				} else if(tcName.isEmpty()) {
@@ -71,20 +75,30 @@ public class ExcelTestManager extends TestManager {
 			TestSession.setTestCases(tests);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			setTestSucessful = false;
+			ExcelUtil.deleteFailedTestsExcel();
 		} finally {
-			closeWorkBook(workBook);
+			if(null != workBook) {
+				closeWorkBook(workBook);
+			}
 		}
+		return setTestSucessful;
 	}
 	
 	private Workbook getWorkBook() throws InvalidFormatException, IOException {
 		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
 		String fileName = bugHuntConfig.getBaseFWPath() + "/TestManager";
+		if("true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
+			fileName = bugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
+		}
 		File file = null;
 		Workbook workBook = null;
 		tests = new ArrayList<>();
 		file = new File(fileName);
 		if ("xlsx".equals(ExcelUtil.getExcelFileExtension(fileName))) {
-			fileName = fileName + ".xlsx";
+			if(!"true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
+				fileName = fileName + ".xlsx";
+			}
 			file = new File(fileName);
 			workBook = new XSSFWorkbook(file);
 		} else {
@@ -100,10 +114,46 @@ public class ExcelTestManager extends TestManager {
 		return workBook.getSheet(testSet);
 	}
 	
+	public void setTestHeaderColumnAndWidth() {
+		Workbook workBook = null;
+		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
+		String fileName = bugHuntConfig.getBaseFWPath() + "/TestManager";
+		File file = null;
+		try {
+			file = new File(fileName);
+			if ("xlsx".equals(ExcelUtil.getExcelFileExtension(fileName))) {
+				fileName = fileName + ".xlsx";
+				file = new File(fileName);
+				workBook = new XSSFWorkbook(file);
+			} else {
+				fileName = fileName + ".xls";
+				file = new File(fileName);
+				workBook = new HSSFWorkbook(new FileInputStream(file));
+			}
+			Sheet sheet = getTestManagerSheet(workBook);
+			Iterator<Row> rows = sheet.rowIterator();
+			Row row = (Row) rows.next();
+			Cell cell;
+			Iterator<?> cells = row.cellIterator();
+			columnNameMap = new LinkedHashMap<>();
+			columnWidth = new LinkedHashMap<>();
+			while (cells.hasNext()) {
+				cell = (Cell) cells.next();
+				columnNameMap.put(cell.getStringCellValue(), cell.getColumnIndex());	
+				columnWidth.put(cell.getColumnIndex(), sheet.getColumnWidth(cell.getColumnIndex()));
+			}
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			closeWorkBook(workBook);
+		}
+		
+	}
+	
 	@Override
 	public String getTestManagerColumnVal(String columnName, int rowNum) {
 		String columnVal = "";
-		if(!headerMap.containsKey(columnName)) {
+		if(!columnNameMap.containsKey(columnName)) {
 			return columnVal;
 		}
 		Workbook workBook = null;
@@ -111,7 +161,7 @@ public class ExcelTestManager extends TestManager {
 			 workBook = getWorkBook();
 			 Sheet sheet = getTestManagerSheet(workBook);
 			 Row row = sheet.getRow(rowNum);
-			 columnVal = ExcelUtil.getCellVal(row, headerMap.get(columnName));
+			 columnVal = ExcelUtil.getCellVal(row, columnNameMap.get(columnName));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -123,7 +173,7 @@ public class ExcelTestManager extends TestManager {
 	private void addTestsToTestSession(Row row, String testName, int testManagerRowNo) {
 		Map<String, String> testProps = new LinkedHashMap<>();
 		String cellVal;
-		for(Entry<String, Integer> entry : headerMap.entrySet()) {
+		for(Entry<String, Integer> entry : columnNameMap.entrySet()) {
 			cellVal = ExcelUtil.getCellVal(row, entry.getValue());
 			testProps.put(entry.getKey(), cellVal);
 		}

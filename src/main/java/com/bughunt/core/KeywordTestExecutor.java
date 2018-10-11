@@ -11,16 +11,29 @@ import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.MethodVO;
 import com.bughunt.domain.ParameterVO;
 import com.bughunt.domain.Test;
+import com.bughunt.domain.Test.OverALLStatus;
 import com.bughunt.reports.Report;
 import com.bughunt.util.DataUtil;
 
 public class KeywordTestExecutor extends Executor {
 
 	@Override
+	protected void executeTest(Test test) {
+		int reRunCount = TestSession.getReRunCount();
+		int count = 0;
+		do {
+			callTestMethods(test);
+			count++;
+		} while(test.getOverAllStatus()==OverALLStatus.FAILED && count != reRunCount);
+	}
+	
+	@Override
 	protected void callTestMethods(Test test) {
 		Map<String, Object> instanceMap = null;
 		Object keywordObj = null;
+		test.setStartTime();
 		test.createReportFolder();
+		
 		Report report = new Report(test);
 		DataUtil dataUtil = new DataUtil(test);
 		int totalIteration = test.isRunMultiIteration() ? dataUtil.getTotalIteration() : 1;
