@@ -35,6 +35,8 @@ public class BugHuntConstants {
 	public static final String THREAD_COUNT = "ThreadCount";
 	public static final String EXECUTION_MODE = "ExecutionMode";
 	public static final String RE_RUN_COUNT = "ReRunCount";
+	public static final String INTEGRATE_VIDEO = "IntegrateVideo";
+	public static final String VIDEO_CAPTURE_CLASS = "VideoCaptureClass";
 	
 	public static final String BEFORE_ANNOTATION ="Before";
 	public static final String AFTER_ANNOTATION ="After";
@@ -57,6 +59,7 @@ public class BugHuntConstants {
 	public static final String DATE_TIME = "Date & Time";
 	public static final String NO_OF_TESTS_PASSED = "No of Tests Passed";
 	public static final String NO_OF_TESTS_FAILED = "No of Tests Failed";
+	public static final String RE_RUN_COUNT_LABEL = "Re Run Count";
 	
 	public static final String LABEL = "label";
 	public static final String VALUE = "value";

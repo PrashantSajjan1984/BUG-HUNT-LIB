@@ -188,7 +188,7 @@ public class SummaryReport {
 			JSONObject failedTestsObj = new JSONObject();
 			JSONObject failedTestObj = null;
 			JSONArray failedTestsArray = new JSONArray();
-			List<Test> failedTests = testsCompleted.stream().filter(t->t.getOverAllStatus()==(OverALLStatus.FAILED)).collect(Collectors.toList());
+			List<Test> failedTests = testsCompleted.stream().filter(t->t.getOverAllStatus()==OverALLStatus.FAILED).collect(Collectors.toList());
 			for (Test test : failedTests) {
 				failedTestObj = new JSONObject();
 				Map<String,String> props = test.getPropMap();

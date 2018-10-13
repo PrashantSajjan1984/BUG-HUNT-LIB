@@ -49,6 +49,7 @@ public class Test {
 	private String executionTime;
 	private String folderName;
 	private String summaryRptLink;
+	private int reRunCount = 0;
 	
 	
 	public Test(String name, int id, Map<String, String> propMap) {
@@ -206,6 +207,14 @@ public class Test {
 	public void setSlNo(int slNo) {
 		this.slNo = slNo;
 	}
+	
+	public int getReRunCount() {
+		return reRunCount;
+	}
+
+	public void setReRunCount(int reRunCount) {
+		this.reRunCount = reRunCount;
+	}
 
 	private void addTCProps(String label, String value) {
 		Map<String, String> propMap = new HashMap<>();
@@ -301,6 +310,10 @@ public class Test {
 			addTCProps(BugHuntConstants.NO_OF_STEPS_WITH_WARNINGS, String.valueOf(stepsWithWarning));
 		}
 		addTCProps(BugHuntConstants.EXECUTION_TIME, String.valueOf(stepsWithWarning));
+		if(reRunCount > 0) {
+			addTCProps(BugHuntConstants.RE_RUN_COUNT_LABEL, String.valueOf(reRunCount));
+		}
+		
 		if(stepsFailed == 0) {
 			setOverAllStatus(OverALLStatus.PASSED);
 			addTCProps(BugHuntConstants.RESULT, BugHuntConstants.PASS);

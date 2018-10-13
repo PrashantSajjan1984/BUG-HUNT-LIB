@@ -22,6 +22,7 @@ public class KeywordTestExecutor extends Executor {
 		int reRunCount = TestSession.getReRunCount();
 		int count = 0;
 		do {
+			test.setReRunCount(count);
 			callTestMethods(test);
 			count++;
 		} while(test.getOverAllStatus()==OverALLStatus.FAILED && count != reRunCount);
@@ -60,9 +61,9 @@ public class KeywordTestExecutor extends Executor {
 			}
 			test.addStepsAfterIteration();
 		}
-		callBeforeAfterMethods(BugHuntConstants.AFTER_ANNOTATION, test, report, dataUtil);
 		test.setExecutionStatus();
 		report.saveReport();
+		callBeforeAfterMethods(BugHuntConstants.AFTER_ANNOTATION, test, report, dataUtil);
 	}
 
 	private Object getKeywordClassInstance(Test test, Report report, DataUtil dataUtil, MethodVO methodVO)

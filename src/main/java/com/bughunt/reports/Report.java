@@ -24,6 +24,7 @@ import com.bughunt.domain.ExecutionMode;
 import com.bughunt.domain.ScreenShot;
 import com.bughunt.domain.StepResult;
 import com.bughunt.domain.Test;
+import com.bughunt.domain.VideoCapture;
 import com.bughunt.util.CommonUtil;
 import com.samskivert.mustache.Mustache;
 
@@ -74,6 +75,19 @@ public class Report {
 		} 
 	}
 	
+	private String getVideoURL() {
+		String videoCaptureClass = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.VIDEO_CAPTURE_CLASS);
+		VideoCapture videoCapture = null;
+		String videoURL = null;
+		try {
+			videoCapture = (VideoCapture) Class.forName(videoCaptureClass).newInstance();
+			videoURL = videoCapture.getSauceVideoUrl();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return videoURL;
+	}
+	
 	public void saveReport() {
 		final File templateDir = new File(BugHuntConfig.instance().getReportsTemplatePath());
 		Mustache.Compiler c = Mustache.compiler().withLoader(new Mustache.TemplateLoader() {
@@ -92,10 +106,20 @@ public class Report {
 			Map<String, String> execTimeMap = optionalExecTimeMap.get();
 			execTimeMap.put(BugHuntConstants.VALUE, executionTime);
 		}
-		Map<String, Test> testObject = new HashMap<>();
-		testObject.put("testObject", test);
+		
+		Map<String, Object> reportObject = new HashMap<>();
+		// Map<String, Test> testObject = new HashMap<>();
+		reportObject.put("testObject", test);
+		
+		if("true".equals(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.INTEGRATE_VIDEO))) {
+			String videoURL = getVideoURL();
+			if(null != videoURL) {
+				reportObject.put("integrateVideo", true);
+				reportObject.put("videoURL", videoURL);
+			}
+		}
 		String tmplName = String.format("{{>%s}}", BugHuntConstants.REPORT_TEMPLATE_NAME);
-		String compiledHTML =  c.compile(tmplName).execute(testObject);
+		String compiledHTML =  c.compile(tmplName).execute(reportObject);
 		String testRptShortName = CommonUtil.getShortFileName(test.getName()) + ".html";
 		String reportName = test.getDirPath() + testRptShortName;
 		String summaryRptLink = test.getFolderName() + "/" + testRptShortName;

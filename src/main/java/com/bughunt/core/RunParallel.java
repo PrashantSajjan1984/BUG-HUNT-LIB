@@ -19,5 +19,4 @@ public class RunParallel implements Runnable {
 		executor.executeTest(test);
 		summaryReport.generateReport();
 	}
-
 }
