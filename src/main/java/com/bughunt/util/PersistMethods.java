@@ -65,9 +65,15 @@ public class PersistMethods {
 			throw new InCompleteSettingsException(sb.substring(0, sb.length()-1));
 		}	
 		
+		try {
+			
+			Class<?> superClass = keywordClass.newInstance().getClass().getSuperclass();
+			setBaseClassBeforeAfter(superClass, keywordClass);
+		} catch (Exception ex) {
+			throw new InCompleteSettingsException(ex.getMessage());
+		}   
 		
-		Class<?> superClass = classes.get(0).newInstance().getClass().getSuperclass();
-		setBaseClassBeforeAfter(superClass, classes.get(0));
+		
 		TestSession.setAnnotationMap(annotationMap);
 		if(sameAnnotationMap.containsKey(BugHuntConstants.BEFORE_ANNOTATION) || sameAnnotationMap.containsKey(BugHuntConstants.AFTER_ANNOTATION)) {
 			handleDuplicateBeforeAfterMethods();
