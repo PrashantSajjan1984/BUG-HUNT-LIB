@@ -19,13 +19,14 @@ public class KeywordTestExecutor extends Executor {
 
 	@Override
 	protected void executeTest(Test test) {
+		test.setInProgressStatus();
 		int reRunCount = TestSession.getReRunCount();
 		int count = 0;
 		do {
 			test.setReRunCount(count);
 			callTestMethods(test);
 			count++;
-		} while(test.getOverAllStatus()==OverALLStatus.FAILED && count != reRunCount);
+		} while(test.getOverAllStatus()==OverALLStatus.FAILED && count != reRunCount + 1);
 	}
 	
 	@Override
@@ -34,7 +35,6 @@ public class KeywordTestExecutor extends Executor {
 		Object keywordObj = null;
 		test.setStartTime();
 		test.createReportFolder();
-		
 		Report report = new Report(test);
 		DataUtil dataUtil = new DataUtil(test);
 		int totalIteration = test.isRunMultiIteration() ? dataUtil.getTotalIteration() : 1;

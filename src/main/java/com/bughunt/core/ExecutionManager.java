@@ -104,7 +104,13 @@ public class ExecutionManager {
 		}
 		if(BugHuntConstants.PARALLEL_MULTI_CONFIG.toLowerCase().equals(
 				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
-			testManager.setParallelConfigTests();
+			testManager.setParallelMultiConfigTests();
+		}
+		
+		if(BugHuntConstants.PARALLEL_DEVICE_CONFIG.toLowerCase().equals(
+				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
+			
+			testManager.setParallelDeviceTests();
 		}
 	}
 	
@@ -139,15 +145,18 @@ public class ExecutionManager {
 	private void executeTests() {
 		TestExecutor testExecutor = new TestExecutor();
 		switch(TestSession.getExecutionMode()) {
+		case SEQUENTIAL:
+			testExecutor.executeTests();
+		break;
 		case PARALLEL:
 				testExecutor.executeTestsInParallel();
 			break;
 		case PARALLELMULTICONFIG:
 				testExecutor.executeTestsForParallelConfig();
 			break;
-		case SEQUENTIAL:
-				testExecutor.executeTests();
-			break;
+		case PARALLELDEVICECONFIG:
+			testExecutor.executeTestsForParallelDeviceConfig();
+		break;
 		default:
 				testExecutor.executeTests();
 			break;

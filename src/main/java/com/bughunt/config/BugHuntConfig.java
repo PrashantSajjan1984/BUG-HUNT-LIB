@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -252,5 +253,29 @@ public class BugHuntConfig {
 			}
 		}
 		return parallelConfig;
+	}
+	
+	public List<Map<String,String>> setParallelDeviceGroupID(List<Map<String,String>> parallelConfigs) {
+		int min = 8;
+		int max =100;
+		int index = 0;
+		int randomNum;
+		String groupID = "";
+		for (Map<String, String> map : parallelConfigs) {
+			index++;
+			if(!map.containsKey(BugHuntConstants.GROUP_ID)) {
+				randomNum = getRandomNumberInRange(min, max);
+				groupID =BugHuntConstants.GROUP_LABEL + String.format("_%d_%d",randomNum, index);
+				map.put(BugHuntConstants.GROUP_ID, groupID);
+			}
+		}
+		return parallelConfigs;
+	}
+	
+	private static int getRandomNumberInRange(int min, int max) {
+		
+		Random r = new Random();
+		return r.ints(min, (max + 1)).findFirst().getAsInt();
+
 	}
 }

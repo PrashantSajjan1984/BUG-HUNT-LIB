@@ -29,9 +29,9 @@ public class RunParallelMultiConfig implements Runnable {
 		for(Test configTest:configTests) {
 			Thread t = new Thread(new Runnable() {
                 public void run() {
-                		Executor executor = new KeywordTestExecutor();
-                		executor.setProps(configTest.getParallelConfig());
-                		executor.executeTest(configTest);
+            		Executor executor = new KeywordTestExecutor();
+            		executor.setProps(configTest.getParallelConfig());
+            		executor.executeTest(configTest);
                 }
             });
 			mWorkerThreads.add (t);

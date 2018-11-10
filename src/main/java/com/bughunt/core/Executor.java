@@ -18,5 +18,4 @@ public abstract class Executor {
 
 	protected abstract void callTestMethods(Test test);
 	protected abstract void executeTest(Test test);
-	
 }

@@ -1,9 +1,7 @@
 package com.bughunt.core;
 
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,10 +20,12 @@ public class TestSession {
 	private static EnumSet<StepResult> screenShotStepResults;
 	private static Map<Integer, Object> masterTestData;
 	private static Map<String, List<Test>> multiConfigTestMap;
+	private static Map<String, Object> multiDeviceGroupMap;
 	private static ExecutionMode executionMode;
 	private static LocalDateTime startExecutionTime;
 	private static Map<String, String> commonData;
 	private static int reRunCount;
+	private static List<Map<String,String>> parallelConfigs;
 	
 	private TestSession() {
 		
@@ -125,6 +125,22 @@ public class TestSession {
 
 	public static void setReRunCount(int reRunCount) {
 		TestSession.reRunCount = reRunCount;
+	}
+
+	public static Map<String, Object> getMultiDeviceGroupMap() {
+		return multiDeviceGroupMap;
+	}
+
+	public static void setMultiDeviceGroupMap(Map<String, Object> multiDeviceGroupMap) {
+		TestSession.multiDeviceGroupMap = multiDeviceGroupMap;
+	}
+
+	public static List<Map<String, String>> getParallelConfigs() {
+		return parallelConfigs;
+	}
+
+	public static void setParallelConfigs(List<Map<String, String>> parallelConfigs) {
+		TestSession.parallelConfigs = parallelConfigs;
 	}
 }
 

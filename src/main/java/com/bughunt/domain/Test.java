@@ -163,6 +163,10 @@ public class Test {
 		return propMap;
 	}
 	
+	public void setParallelConfig(Map<String, String> parallelConfig) {
+		this.parallelConfig = parallelConfig;
+	}
+	
 	public Map<String, String> getParallelConfig() {
 		return parallelConfig;
 	}
@@ -239,6 +243,11 @@ public class Test {
 			multiIterationSteps.add(steps);
 		}
 	}
+	
+	public void setInProgressStatus() {
+		this.overAllStatus = OverALLStatus.INPROGRESS;
+	}
+	
 	
 	public void addTestStep(String desc, String actualResult, StepResult result, Optional<String> screenShotPath) {
 		Step step = new Step();

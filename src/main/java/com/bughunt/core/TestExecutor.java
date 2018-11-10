@@ -2,9 +2,11 @@ package com.bughunt.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.util.StringUtil;
@@ -14,6 +16,7 @@ import com.bughunt.constants.BugHuntConstants;
 import com.bughunt.domain.Test;
 import com.bughunt.reports.SummaryReport;
 import com.bughunt.util.CommonUtil;
+import com.bughunt.util.SynchronizeUtil;
 
 public class TestExecutor {
 
@@ -43,8 +46,8 @@ public class TestExecutor {
         RunParallel runParallel;
         SummaryReport summaryReport = new SummaryReport();
         for(Test test:TestSession.getTestCases()) {
-        		runParallel = new RunParallel(test, summaryReport);
-        		tasks.add(runParallel);
+        	runParallel = new RunParallel(test, summaryReport);
+        	tasks.add(runParallel);
         }
         return tasks;
     }
@@ -70,5 +73,27 @@ public class TestExecutor {
        return tasks;
    }
 	
+	public void executeTestsForParallelDeviceConfig() {
+		 int threadCount = TestSession.getParallelConfigs().size();
+		 System.out.println("No of thread counts : " +threadCount);
+		 ExecutorService es = Executors.newFixedThreadPool(threadCount);
+	     List<Runnable> tasks = getTasksParallelDeviceConfig();
+	     CompletableFuture<?>[] futures = tasks.stream().map(task -> CompletableFuture.runAsync(task, es)).toArray(CompletableFuture[]::new);
+	     CompletableFuture.allOf(futures).join();
+	     es.shutdown();
+	}
 	
+	private List<Runnable> getTasksParallelDeviceConfig() {
+       List<Runnable> tasks = new ArrayList<Runnable>();
+       RunParallelDeviceConfig runParallel;
+       List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
+       List<String> groupIDs = parallelConfigs.stream().map(t->t.get(BugHuntConstants.GROUP_ID)).collect(Collectors.toList());
+       SummaryReport summaryReport = new SummaryReport();
+       SynchronizeUtil syncUtil = new SynchronizeUtil();
+       for(String groupID:groupIDs) {
+    	   runParallel = new RunParallelDeviceConfig(groupID, summaryReport, syncUtil);
+    	   tasks.add(runParallel);
+       }
+       return tasks;
+	}
 }

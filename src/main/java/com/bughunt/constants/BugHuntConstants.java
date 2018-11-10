@@ -42,7 +42,10 @@ public class BugHuntConstants {
 	public static final String AFTER_ANNOTATION ="After";
 	
 	public static final String PARALLEL_MULTI_CONFIG = "ParallelMultiConfig";
+	public static final String PARALLEL_DEVICE_CONFIG = "ParallelDeviceConfig";
 	public static final String COMMON_EXCEL_DATA = "CommonData";
+	public static final String GROUP_ID = "GroupID";
+	public static final String GROUP_LABEL = "Group";
 	
 	public static final String ID = "id";
 	
