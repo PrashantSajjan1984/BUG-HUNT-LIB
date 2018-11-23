@@ -271,7 +271,8 @@ public class Test {
 	
 	private void setReportProps(Map<String, String> propMap) {
 		for(String prop: TestSession.getReportProps()) {
-			if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() || null == parallelConfig) {
+			if((ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() && ExecutionMode.PARALLELDEVICECONFIG != TestSession.getExecutionMode()) || 
+					null == parallelConfig) {
 				if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))
 						) {
 					addTCProps(prop, propMap.get(prop));
@@ -347,7 +348,11 @@ public class Test {
 	
 	public void createReportFolder() {
 		String reportPath = BugHuntConfig.instance().getExecutionReportPath();
-		folderName = id + "_" + CommonUtil.getShortFileName(name);
+		if(BugHuntConstants.PARALLEL_DEVICE_CONFIG.toLowerCase().equals(
+				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
+			reportPath = reportPath + parallelConfig.get(BugHuntConstants.REPORT_VALUE) + "/";
+		}
+		folderName = id + "_" + CommonUtil.getShortFileName(name); 
 		dirPath = reportPath + folderName;
 		Path dir = Paths.get(dirPath);
 		try {
@@ -357,6 +362,7 @@ public class Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println(parallelConfig);
 	}
 	
 	private class Step {

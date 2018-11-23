@@ -142,6 +142,18 @@ public class SummaryReport {
 		createReport(BugHuntConstants.MULTI_CONFIG_REPORT_TEMPLATE_NAME, testObject, reportName);
 	}
 	
+	public synchronized void generateParallelDeviceSummaryReport() {
+		Map<String, Object> testObject = new HashMap<>();
+		Map<String, Object> testMap = new HashMap<>();
+		List<MultiConfigResult> reportObject = getMultiConfigSummaryReportObject();
+		testMap.put("tests", reportObject);
+		testObject.put("testObject", testMap);
+		testObject.put("headerLabel", TestSession.getSummaryReportProps());
+		List<Map<String, String>> summaryMap = getMultiConfigSummaryHeader(reportObject);
+		testObject.put("summaryHeaders",summaryMap);
+		String reportName = BugHuntConfig.instance().getExecutionReportPath() + "MultiConfigSummaryReport.html";
+		createReport(BugHuntConstants.MULTI_CONFIG_SUMMARY_REPORT_TEMPLATE_NAME, testObject, reportName);
+	}
 	private Object getMultiConfigReportObject(Test test) {
 		Map<String, Object> testObject = new HashMap<>();
 		Map<String, Object> testMap = new HashMap<>();

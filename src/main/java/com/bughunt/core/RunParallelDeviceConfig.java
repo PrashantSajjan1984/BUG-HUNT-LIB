@@ -41,22 +41,26 @@ public class RunParallelDeviceConfig implements Runnable {
 		String reportName = groups.stream().map(t->t.get("ReportValue")).findFirst().get();
 		for(Test test: tests) {
 			executor.executeTest(test);
-			
+			System.out.println("------------------------------------------------------");
+			System.out.println();
 			System.out.printf("Execution completed for test %s on thred %s for groupID %s for report %s\n", test.getName(), Thread.currentThread().getId(), groupID, reportName);
-			//summaryRpt.generateReport();
+			System.out.println();
+			System.out.println("------------------------------------------------------");
+			summaryReport.generateParallelDeviceSummaryReport();
 		} 
 	}
 	
 	private void runTestForAGroup() {
 		boolean execute = true;
 		Executor executor = new KeywordTestExecutor();
-		do{
+		do {
 			Test test = syncUtil.getNextTestForDevice(groupID);
 			if(test!=null) {
 				executor.executeTest(test);
 			} else {
 				execute = false;
 			}
-		}while(execute==true);
+		} while(execute==true);
+		summaryReport.generateParallelDeviceSummaryReport();
 	}
 }

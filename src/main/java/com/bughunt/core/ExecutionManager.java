@@ -4,6 +4,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.bughunt.config.BugHuntConfig;
 import com.bughunt.constants.BugHuntConstants;
@@ -111,6 +115,7 @@ public class ExecutionManager {
 				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
 			
 			testManager.setParallelDeviceTests();
+			createDeviceFolders();
 		}
 	}
 	
@@ -162,4 +167,14 @@ public class ExecutionManager {
 			break;
 		}
 	}
+	
+	private void createDeviceFolders() {
+		List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
+		Set<String> folders = parallelConfigs.stream().map(t->t.get(BugHuntConstants.REPORT_VALUE)).collect(Collectors.toSet());
+		String rootFolderPath = BugHuntConfig.instance().getExecutionReportPath();
+		for (String folder : folders) {
+			CommonUtil.createFolder(rootFolderPath + folder + "/");
+		}
+	}
+	
 }

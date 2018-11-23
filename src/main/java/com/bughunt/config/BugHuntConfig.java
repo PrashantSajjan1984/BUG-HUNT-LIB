@@ -154,10 +154,18 @@ public class BugHuntConfig {
 	
 	private void setReportProps() {
 		String reportProps = null;
-		if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode()) {
+		switch(TestSession.getExecutionMode()) {
+		case PARALLEL:
+		case SEQUENTIAL:
 			reportProps = getBugHuntProperty(BugHuntConstants.REPORT_PROPERTIES);
-		} else {
+			break;
+		case PARALLELDEVICECONFIG:
+		case PARALLELMULTICONFIG:
 			reportProps = getBugHuntProperty(BugHuntConstants.PARALLEL_MULTI_CONFIG_PROPS);
+			break;
+		default:
+			reportProps = getBugHuntProperty(BugHuntConstants.REPORT_PROPERTIES);
+			break;
 		}
 		String[] propsSplit = reportProps.split(",");
 		TestSession.setReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
@@ -276,6 +284,5 @@ public class BugHuntConfig {
 		
 		Random r = new Random();
 		return r.ints(min, (max + 1)).findFirst().getAsInt();
-
 	}
 }

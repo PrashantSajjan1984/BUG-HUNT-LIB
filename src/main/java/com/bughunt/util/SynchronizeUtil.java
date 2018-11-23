@@ -28,9 +28,11 @@ public class SynchronizeUtil {
 			test = optTest.get();
 			Map<String, String> config = getDeviceConfig(groupID);
 			test.setParallelConfig(config);
-			System.out.println("Running test - "+test.getName());
-			System.out.println("Thread  - "+Thread.currentThread().getId());
-			System.out.println("-----------------------------------------");
+			System.out.println("------------------------------------------------------");
+			System.out.println();
+			System.out.printf("Execution started for test %s on thred %s for groupID %s for report %s\n", test.getName(), Thread.currentThread().getId(), groupID, config.get("ReportValue"));
+			System.out.println();
+			System.out.println("------------------------------------------------------");
 		}
 		return test;
 	}
@@ -38,7 +40,7 @@ public class SynchronizeUtil {
 	private Map<String, String> getDeviceConfig(String groupID) {
 		List<Map<String, String>> configs = groupsMap.get(groupID);
 		int index = 0;
-		if(null!=groupsLastIndexMap.get(groupID)) {
+		if(configs!=null && null!=groupsLastIndexMap.get(groupID)) {
 			int indexCalc = groupsLastIndexMap.get(groupID) +1;
 			index = indexCalc == configs.size() ? 0 :indexCalc;
 		}
