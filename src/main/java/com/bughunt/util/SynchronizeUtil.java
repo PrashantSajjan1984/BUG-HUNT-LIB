@@ -24,9 +24,9 @@ public class SynchronizeUtil {
 		List<Test> tests = TestSession.getMultiConfigTestMap().get(groupID);
 		Optional<Test> optTest = tests.stream().filter(t->t.getOverAllStatus()==OverALLStatus.NOT_STARTED).findFirst();
 		Test test = null;
-		if(optTest.isPresent()) {
+		Map<String, String> config = getDeviceConfig(groupID);
+		if(optTest.isPresent() && null!=config) {
 			test = optTest.get();
-			Map<String, String> config = getDeviceConfig(groupID);
 			test.setParallelConfig(config);
 			System.out.println("------------------------------------------------------");
 			System.out.println();
@@ -39,12 +39,18 @@ public class SynchronizeUtil {
 	
 	private Map<String, String> getDeviceConfig(String groupID) {
 		List<Map<String, String>> configs = groupsMap.get(groupID);
-		int index = 0;
-		if(configs!=null && null!=groupsLastIndexMap.get(groupID)) {
-			int indexCalc = groupsLastIndexMap.get(groupID) +1;
-			index = indexCalc == configs.size() ? 0 :indexCalc;
+		// int index = 0;
+		if(configs!=null && !configs.isEmpty()) {
+			int indexCalc = groupsLastIndexMap.containsKey(groupID) ? groupsLastIndexMap.get(groupID) + 1 : 0;
+			// index = indexCalc == configs.size() ? 0 :indexCalc;
+			if(indexCalc < configs.size()) {
+				groupsLastIndexMap.put(groupID, indexCalc);
+				return configs.get(indexCalc);
+			} else {
+				groupsLastIndexMap.put(groupID, 0);
+				return configs.get(0);
+			}
 		}
-		groupsLastIndexMap.put(groupID, index);
-		return configs.get(index);
+		return null;
 	}
 }

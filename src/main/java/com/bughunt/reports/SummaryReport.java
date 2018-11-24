@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
@@ -142,17 +143,25 @@ public class SummaryReport {
 		createReport(BugHuntConstants.MULTI_CONFIG_REPORT_TEMPLATE_NAME, testObject, reportName);
 	}
 	
-	public synchronized void generateParallelDeviceSummaryReport() {
+	public synchronized void generateParallelDeviceSummaryReport(String groupID) {
 		Map<String, Object> testObject = new HashMap<>();
-		Map<String, Object> testMap = new HashMap<>();
-		List<MultiConfigResult> reportObject = getMultiConfigSummaryReportObject();
-		testMap.put("tests", reportObject);
+		Map<String, List<Test>> testMap = new HashMap<>();
+		List<Test> tests = TestSession.getMultiConfigTestMap().get(groupID);
+		List<Test> executedTests = tests.stream().filter(t->t.getOverAllStatus()==OverALLStatus.PASSED || t.getOverAllStatus()==OverALLStatus.FAILED).collect(Collectors.toList());
+		String deviceFolderName = executedTests.get(0).getParallelConfig().get(BugHuntConstants.REPORT_VALUE);
+		
+		AtomicInteger index = new AtomicInteger();
+		executedTests.forEach(t->t.setSlNo(index.incrementAndGet()));
+		testMap.put("tests", executedTests);
 		testObject.put("testObject", testMap);
-		testObject.put("headerLabel", TestSession.getSummaryReportProps());
-		List<Map<String, String>> summaryMap = getMultiConfigSummaryHeader(reportObject);
+		testObject.put("headerLabels", TestSession.getSummaryReportProps());
+
+		List<Map<String, String>> summaryMap = getSummaryHeader(executedTests);
 		testObject.put("summaryHeaders",summaryMap);
-		String reportName = BugHuntConfig.instance().getExecutionReportPath() + "MultiConfigSummaryReport.html";
-		createReport(BugHuntConstants.MULTI_CONFIG_SUMMARY_REPORT_TEMPLATE_NAME, testObject, reportName);
+		String reportName = BugHuntConfig.instance().getExecutionReportPath() + deviceFolderName + "/SummaryReport.html";
+		createReport(BugHuntConstants.SUMMARY_REPORT_TEMPLATE_NAME, testObject, reportName);
+		// failedTestsJSONReport(testsCompleted);
+		
 	}
 	private Object getMultiConfigReportObject(Test test) {
 		Map<String, Object> testObject = new HashMap<>();

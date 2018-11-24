@@ -76,7 +76,8 @@ public class KeywordTestExecutor extends Executor {
 		constructor = keywordClass
 				.getConstructor(new Class[] { ParameterVO.class });
 		ParameterVO parameterVO = null;
-		if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode()) {
+		if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() &&
+				ExecutionMode.PARALLELDEVICECONFIG != TestSession.getExecutionMode()) {
 			parameterVO = new ParameterVO(report, dataUtil, test.getName(), test.getDirPath());
 		} else {
 			parameterVO = new ParameterVO(report, dataUtil, test.getName(), test.getDirPath(), getMultiConfigProps());

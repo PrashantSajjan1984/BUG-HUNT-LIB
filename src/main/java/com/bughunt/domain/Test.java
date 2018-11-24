@@ -79,10 +79,12 @@ public class Test {
 		this.totalIteration = test.getTotalIteration();
 		this.runMultiIteration = test.isRunMultiIteration();
 		props = new ArrayList<>();
+		summaryProps = new ArrayList<>();
 		addTCProps("Test Case Name", name);
 		addTCProps(BugHuntConstants.ENVIRONMENT, 
 				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
 		setReportProps(propMap);
+		setSummaryReportProps(propMap);
 		if(propMap.containsKey("RunIterations") && "No".equals(propMap.get("propMap"))) {
 			runMultiIteration = false;
 		}
@@ -289,13 +291,14 @@ public class Test {
 	
 	private void setSummaryReportProps(Map<String, String> propMap) {
 		for(String prop: TestSession.getSummaryReportProps()) {
-			if(ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() || null == parallelConfig) {
+			if((ExecutionMode.PARALLELMULTICONFIG != TestSession.getExecutionMode() &&
+					ExecutionMode.PARALLELDEVICECONFIG != TestSession.getExecutionMode()) && null == parallelConfig) {
 				if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))
 						) {
 					addSummaryReportProps(prop, propMap.get(prop));
 				} 
 			} else {
-				if(parallelConfig.containsKey(prop) && StringUtils.isNotBlank(parallelConfig.get(prop))) {
+				if(parallelConfig!=null && parallelConfig.containsKey(prop) && StringUtils.isNotBlank(parallelConfig.get(prop))) {
 					addSummaryReportProps(prop, parallelConfig.get(prop));
 				} else if(propMap.containsKey(prop) && StringUtils.isNotBlank(propMap.get(prop))) {
 					addSummaryReportProps(prop, propMap.get(prop));

@@ -40,13 +40,14 @@ public class RunParallelDeviceConfig implements Runnable {
 		List<Map<String, String>> groups = configs.stream().filter(t->groupID.equals(t.get(BugHuntConstants.GROUP_ID))).collect(Collectors.toList());
 		String reportName = groups.stream().map(t->t.get("ReportValue")).findFirst().get();
 		for(Test test: tests) {
+			executor.setProps(test.getParallelConfig());
 			executor.executeTest(test);
 			System.out.println("------------------------------------------------------");
 			System.out.println();
 			System.out.printf("Execution completed for test %s on thred %s for groupID %s for report %s\n", test.getName(), Thread.currentThread().getId(), groupID, reportName);
 			System.out.println();
 			System.out.println("------------------------------------------------------");
-			summaryReport.generateParallelDeviceSummaryReport();
+			summaryReport.generateParallelDeviceSummaryReport(groupID);
 		} 
 	}
 	
@@ -56,11 +57,12 @@ public class RunParallelDeviceConfig implements Runnable {
 		do {
 			Test test = syncUtil.getNextTestForDevice(groupID);
 			if(test!=null) {
+				executor.setProps(test.getParallelConfig());
 				executor.executeTest(test);
 			} else {
 				execute = false;
 			}
 		} while(execute==true);
-		summaryReport.generateParallelDeviceSummaryReport();
+		summaryReport.generateParallelDeviceSummaryReport(groupID);
 	}
 }

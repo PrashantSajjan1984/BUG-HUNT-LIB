@@ -88,6 +88,7 @@ public class TestExecutor {
        RunParallelDeviceConfig runParallel;
        List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
        List<String> groupIDs = parallelConfigs.stream().map(t->t.get(BugHuntConstants.GROUP_ID)).collect(Collectors.toList());
+       System.out.println(groupIDs);
        SummaryReport summaryReport = new SummaryReport();
        SynchronizeUtil syncUtil = new SynchronizeUtil();
        for(String groupID:groupIDs) {
