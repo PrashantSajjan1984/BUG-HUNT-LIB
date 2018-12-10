@@ -80,8 +80,10 @@ public class Report {
 		VideoCapture videoCapture = null;
 		String videoURL = null;
 		try {
-			videoCapture = (VideoCapture) Class.forName(videoCaptureClass).newInstance();
-			videoURL = videoCapture.getSauceVideoUrl();
+			if(ExecutionMode.SEQUENTIAL != TestSession.getExecutionMode()) {
+				videoCapture = (VideoCapture) Class.forName(videoCaptureClass).newInstance();
+				videoURL = videoCapture.getSauceVideoUrl();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

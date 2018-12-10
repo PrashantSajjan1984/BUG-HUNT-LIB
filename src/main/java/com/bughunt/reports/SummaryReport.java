@@ -108,7 +108,7 @@ public class SummaryReport {
 			List<String> reportVals = tests.stream().map(t->t.getParallelConfig().get(BugHuntConstants.REPORT_VALUE)).collect(Collectors.toList());
 			String reportVal = StringUtils.join(reportVals, ",");
 			boolean testFailed = tests.stream().anyMatch(t->OverALLStatus.FAILED ==t.getOverAllStatus());
-			result = new MultiConfigResult(++slNo, entry.getKey(), reportVal, !testFailed );
+			result = new MultiConfigResult(++slNo, entry.getKey(), reportVal, !testFailed, tests.get(0).getSummaryRptLink());
 			testResults.add(result);
 		}
 		return testResults;
@@ -140,6 +140,7 @@ public class SummaryReport {
 		Object testObject = getMultiConfigReportObject(test);
 		List<Test> tests = TestSession.getMultiConfigTestMap().get(test.getName());
 		String reportName = tests.get(0).getDirPath() +"MultiConfig_" +CommonUtil.getShortFileName(test.getName()) + ".html";
+		tests.stream().forEach(t->t.setSummaryRptLink(reportName));
 		createReport(BugHuntConstants.MULTI_CONFIG_REPORT_TEMPLATE_NAME, testObject, reportName);
 	}
 	
@@ -262,11 +263,13 @@ public class SummaryReport {
 		String name;
 		String customColumnVal;
 		boolean testPassed;
-		public MultiConfigResult(int slNo, String name, String customColumnVal, boolean testPassed) {
+		String summaryRptLink;
+		public MultiConfigResult(int slNo, String name, String customColumnVal, boolean testPassed, String summaryRptLink) {
 			this.slNo = slNo;
 			this.name = name;
 			this.customColumnVal = customColumnVal;
 			this.testPassed = testPassed;
+			this.summaryRptLink = summaryRptLink;
 		}
 		public int getSlNo() {
 			return slNo;
@@ -279,6 +282,9 @@ public class SummaryReport {
 		}
 		public boolean isTestPassed() {
 			return testPassed;
+		}
+		public String getSummaryRptLink() {
+			return summaryRptLink;
 		}
 	}
 }

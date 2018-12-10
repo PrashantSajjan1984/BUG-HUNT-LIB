@@ -365,7 +365,6 @@ public class Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(parallelConfig);
 	}
 	
 	private class Step {

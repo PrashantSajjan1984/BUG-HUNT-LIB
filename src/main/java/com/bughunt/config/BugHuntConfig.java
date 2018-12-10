@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -249,7 +251,11 @@ public class BugHuntConfig {
 		if(parallelConfig == null) {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
-			    File file = new File(baseFWPath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + "ParallelConfig.json");
+				String configFileName = "ParallelConfig.json";
+				if(ExecutionMode.PARALLELDEVICECONFIG == TestSession.getExecutionMode()) {
+					configFileName = "ParallelConfig_Device.json";
+				}
+			    File file = new File(baseFWPath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + configFileName);
 			    String json = FileUtils.readFileToString(file);
 			    parallelConfig = mapper.readValue(json, new TypeReference<List<Map<String, String>>>(){});
 			    int id = 0;
@@ -277,6 +283,20 @@ public class BugHuntConfig {
 				map.put(BugHuntConstants.GROUP_ID, groupID);
 			}
 		}
+		
+		//Remove additional devices if no of tests is less than grouped devices
+		Set<String> distinctGroupIDs = parallelConfigs.stream().map(t->t.get(BugHuntConstants.GROUP_ID)).collect(Collectors.toSet());
+		int noOfTestCases = TestSession.getTestCases().size();
+		for(String group: distinctGroupIDs) {
+			List<Map<String,String>> groupConfigs = parallelConfigs.stream().filter(t->group.equals(t.get(BugHuntConstants.GROUP_ID))).collect(Collectors.toList());
+			long count  = groupConfigs.size();
+			if(count > noOfTestCases) {
+				for(int i = noOfTestCases;i<count;i++) {
+					parallelConfigs.remove(groupConfigs.get(i));
+				}
+			}
+		}
+		
 		return parallelConfigs;
 	}
 	
