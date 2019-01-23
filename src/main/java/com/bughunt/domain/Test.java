@@ -60,7 +60,7 @@ public class Test {
 		summaryProps = new ArrayList<>();
 		addTCProps(BugHuntConstants.TEST_NAME, name);
 		addTCProps(BugHuntConstants.ENVIRONMENT, 
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
 		setReportProps(propMap);
 		setSummaryReportProps(propMap);
 		if(propMap.containsKey("RunIterations") && "No".equals(propMap.get("propMap"))) {
@@ -82,7 +82,7 @@ public class Test {
 		summaryProps = new ArrayList<>();
 		addTCProps("Test Case Name", name);
 		addTCProps(BugHuntConstants.ENVIRONMENT, 
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.ENVIRONMENT));
 		setReportProps(propMap);
 		setSummaryReportProps(propMap);
 		if(propMap.containsKey("RunIterations") && "No".equals(propMap.get("propMap"))) {
@@ -350,9 +350,9 @@ public class Test {
 	}
 	
 	public void createReportFolder() {
-		String reportPath = BugHuntConfig.instance().getExecutionReportPath();
+		String reportPath = BugHuntConfig.getExecutionReportPath();
 		if(BugHuntConstants.PARALLEL_DEVICE_CONFIG.toLowerCase().equals(
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
 			reportPath = reportPath + parallelConfig.get(BugHuntConstants.REPORT_VALUE) + "/";
 		}
 		folderName = id + "_" + CommonUtil.getShortFileName(name); 

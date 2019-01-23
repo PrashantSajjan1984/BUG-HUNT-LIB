@@ -86,17 +86,16 @@ public class ExcelTestManager extends TestManager {
 	}
 	
 	private Workbook getWorkBook() throws InvalidFormatException, IOException {
-		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
-		String fileName = bugHuntConfig.getBaseFWPath() + "/TestManager";
-		if("true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
-			fileName = bugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
+		String fileName = BugHuntConfig.getBaseFWPath() + "/TestManager";
+		if("true".equals(BugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
+			fileName = BugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
 		}
 		File file = null;
 		Workbook workBook = null;
 		tests = new ArrayList<>();
 		file = new File(fileName);
 		if ("xlsx".equals(ExcelUtil.getExcelFileExtension(fileName))) {
-			if(!"true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
+			if(!"true".equals(BugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
 				fileName = fileName + ".xlsx";
 			}
 			file = new File(fileName);
@@ -110,14 +109,13 @@ public class ExcelTestManager extends TestManager {
 	}
 	
 	private Sheet getTestManagerSheet(Workbook workBook) throws InvalidFormatException, IOException {
-		String testSet = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_SET);
+		String testSet = BugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_SET);
 		return workBook.getSheet(testSet);
 	}
 	
 	public void setTestHeaderColumnAndWidth() {
 		Workbook workBook = null;
-		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
-		String fileName = bugHuntConfig.getBaseFWPath() + "/TestManager";
+		String fileName = BugHuntConfig.getBaseFWPath() + "/TestManager";
 		File file = null;
 		try {
 			file = new File(fileName);

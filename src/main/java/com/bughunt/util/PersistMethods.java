@@ -30,7 +30,7 @@ public class PersistMethods {
 	
 	public void setKeywordMethodMapping() throws Exception {
 		keywordMap = new HashMap<>();
-		String keywordPackage = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.KEYWORDS_PACKAGE);
+		String keywordPackage = BugHuntConfig.getBugHuntProperty(BugHuntConstants.KEYWORDS_PACKAGE);
 		List<Class<?>> classes = ClassFinderUtil.getAllClasses(keywordPackage);
     		Class<?> keywordClass = null;
 		Object keywordInstance = null;

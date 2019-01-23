@@ -54,7 +54,7 @@ public class ExecutionManager {
 	}
 
 	private void configureAndTriggerExecution() {
-		BugHuntConfig.instance().setConfigPaths();
+		BugHuntConfig.setConfigPaths();
 		persistMethods();
 		ExcelUtil.setCommonData();
 		setTestsToExecute();
@@ -81,9 +81,8 @@ public class ExecutionManager {
 	private void setTestsToExecute() {
 		TestManager testManager = null;
 		boolean testSetSuccessful = false;
-		BugHuntConfig bugHuntConfig = BugHuntConfig.instance();
-		String fileName = bugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
-		if("true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests")) &&
+		String fileName = BugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
+		if("true".equals(BugHuntConfig.getBugHuntProperty("ExecuteFailedTests")) &&
 				!Files.exists(Paths.get(fileName))) {
 			ExcelTestManager excelManager = new ExcelTestManager();
 			excelManager.setTestHeaderColumnAndWidth();	
@@ -93,7 +92,7 @@ public class ExecutionManager {
 			testManager = new ExcelTestManager();
 			testSetSuccessful = testManager.setTestsToExecute();
 			if(!testSetSuccessful && 
-					"true".equals(bugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
+					"true".equals(BugHuntConfig.getBugHuntProperty("ExecuteFailedTests"))) {
 				testManager = new JsonTestManager();
 				testManager.setTestsToExecute();
 			}
@@ -103,16 +102,16 @@ public class ExecutionManager {
 	private void setParallelConfig() {
 		TestManager testManager = null;
 		if(BugHuntConstants.EXCEL.toLowerCase().
-				equals(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_MANAGER_FORMAT).toLowerCase())) {
+				equals(BugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_MANAGER_FORMAT).toLowerCase())) {
 			testManager = new ExcelTestManager();
 		}
 		if(BugHuntConstants.PARALLEL_MULTI_CONFIG.toLowerCase().equals(
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
 			testManager.setParallelMultiConfigTests();
 		}
 		
 		if(BugHuntConstants.PARALLEL_DEVICE_CONFIG.toLowerCase().equals(
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.EXECUTION_MODE).toLowerCase())) {
 			
 			testManager.setParallelDeviceTests();
 			createDeviceFolders();
@@ -122,7 +121,7 @@ public class ExecutionManager {
 	private void setTestKeywords() {
 		KeywordManager keywordManager = null;
 		if(BugHuntConstants.EXCEL.toLowerCase().
-				equals(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_DATA_FORMAT).toLowerCase())) {
+				equals(BugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_DATA_FORMAT).toLowerCase())) {
 			keywordManager = new ExcelKeywordManager();
 		}
 		keywordManager.setKeywords();
@@ -131,14 +130,14 @@ public class ExecutionManager {
 	private void createExecutionReportFolder() {
 		String reportFolder = getExecutionReportFolderName();
         CommonUtil.createFolder(reportFolder);
-        BugHuntConfig.instance().setExecutionReportPath(reportFolder);
+        BugHuntConfig.setExecutionReportPath(reportFolder);
 	}
 
 	private String getExecutionReportFolderName() {
 		LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
         String formatDateTime = now.format(formatter);
-        String reportFolder = BugHuntConfig.instance().getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH 
+        String reportFolder = BugHuntConfig.getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH 
         		+ BugHuntConstants.REPORT_PATH + BugHuntConstants.BUG_HUNT_REPORT + "_" + formatDateTime;
 		return reportFolder;
 	}
@@ -169,9 +168,9 @@ public class ExecutionManager {
 	}
 	
 	private void createDeviceFolders() {
-		List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
+		List<Map<String,String>> parallelConfigs = BugHuntConfig.getParallelConfigMap();
 		Set<String> folders = parallelConfigs.stream().map(t->t.get(BugHuntConstants.REPORT_VALUE)).collect(Collectors.toSet());
-		String rootFolderPath = BugHuntConfig.instance().getExecutionReportPath();
+		String rootFolderPath = BugHuntConfig.getExecutionReportPath();
 		for (String folder : folders) {
 			CommonUtil.createFolder(rootFolderPath + folder + "/");
 		}

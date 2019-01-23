@@ -57,7 +57,7 @@ public class Report {
 	}
 	
 	private void setScreenShotInstanceAndFolder() {
-		String screenShotClass = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.SCREEN_SHOT_CLASS);
+		String screenShotClass = BugHuntConfig.getBugHuntProperty(BugHuntConstants.SCREEN_SHOT_CLASS);
 		try {
 			screenShot = (ScreenShot) Class.forName(screenShotClass).newInstance();
 			screenShotPath = test.getDirPath() + BugHuntConstants.SCREEN_SHOT_PATH;
@@ -76,7 +76,7 @@ public class Report {
 	}
 	
 	private String getVideoURL() {
-		String videoCaptureClass = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.VIDEO_CAPTURE_CLASS);
+		String videoCaptureClass = BugHuntConfig.getBugHuntProperty(BugHuntConstants.VIDEO_CAPTURE_CLASS);
 		VideoCapture videoCapture = null;
 		String videoURL = null;
 		try {
@@ -91,7 +91,7 @@ public class Report {
 	}
 	
 	public void saveReport() {
-		final File templateDir = new File(BugHuntConfig.instance().getReportsTemplatePath());
+		final File templateDir = new File(BugHuntConfig.getReportsTemplatePath());
 		Mustache.Compiler c = Mustache.compiler().withLoader(new Mustache.TemplateLoader() {
     	    		public Reader getTemplate (String name) throws Exception {
     	    			return new FileReader(new File(templateDir, name));
@@ -113,7 +113,7 @@ public class Report {
 		// Map<String, Test> testObject = new HashMap<>();
 		reportObject.put("testObject", test);
 		
-		if("true".equals(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.INTEGRATE_VIDEO))) {
+		if("true".equals(BugHuntConfig.getBugHuntProperty(BugHuntConstants.INTEGRATE_VIDEO))) {
 			String videoURL = getVideoURL();
 			if(null != videoURL) {
 				reportObject.put("integrateVideo", true);

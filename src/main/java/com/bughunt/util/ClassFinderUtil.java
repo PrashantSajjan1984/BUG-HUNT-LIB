@@ -15,7 +15,7 @@ public class ClassFinderUtil {
     }
     
     public static List<Class<?>> getAllClasses(String scannedPackage) {
-    		String keywordsPackagePath = BugHuntConfig.instance().getKeywordPackagePath();
+    		String keywordsPackagePath = BugHuntConfig.getKeywordPackagePath();
     		File scannedDir = new File(keywordsPackagePath);
         List<Class<?>> classes = new ArrayList<Class<?>>();
         for (File file : scannedDir.listFiles()) {

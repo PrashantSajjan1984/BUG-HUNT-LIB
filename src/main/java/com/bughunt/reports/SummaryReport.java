@@ -46,7 +46,7 @@ public class SummaryReport {
 
 		List<Map<String, String>> summaryMap = getSummaryHeader(testsCompleted);
 		testObject.put("summaryHeaders",summaryMap);
-		String reportName = BugHuntConfig.instance().getExecutionReportPath() + "SummaryReport.html";
+		String reportName = BugHuntConfig.getExecutionReportPath() + "SummaryReport.html";
 		createReport(BugHuntConstants.SUMMARY_REPORT_TEMPLATE_NAME, testObject, reportName);
 		failedTestsJSONReport(testsCompleted);
 	}
@@ -54,7 +54,7 @@ public class SummaryReport {
 	private List<Map<String, String>> getSummaryHeader(List<Test> testsCompleted) {
 		List<Map<String,String>> summaryMap = new ArrayList<>();
 		addSummaryReportProps(BugHuntConstants.ENVIRONMENT, 
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT), summaryMap);
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.ENVIRONMENT), summaryMap);
 		addSummaryReportProps(BugHuntConstants.DATE_TIME, 
 				CommonUtil.getExecutionDateTime(), summaryMap);
 		int noOfStepsPassed = (int) testsCompleted.stream().filter(t->t.getOverAllStatus()==(OverALLStatus.PASSED)).count();
@@ -90,7 +90,7 @@ public class SummaryReport {
 		testObject.put("headerLabel", TestSession.getSummaryReportProps());
 		List<Map<String, String>> summaryMap = getMultiConfigSummaryHeader(reportObject);
 		testObject.put("summaryHeaders",summaryMap);
-		String reportName = BugHuntConfig.instance().getExecutionReportPath() + "MultiConfigSummaryReport.html";
+		String reportName = BugHuntConfig.getExecutionReportPath() + "MultiConfigSummaryReport.html";
 		createReport(BugHuntConstants.MULTI_CONFIG_SUMMARY_REPORT_TEMPLATE_NAME, testObject, reportName);
 	}
 
@@ -117,7 +117,7 @@ public class SummaryReport {
 	private List<Map<String, String>> getMultiConfigSummaryHeader(List<MultiConfigResult> reportObject) {
 		List<Map<String,String>> summaryMap = new ArrayList<>();
 		addSummaryReportProps(BugHuntConstants.ENVIRONMENT, 
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT), summaryMap);
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.ENVIRONMENT), summaryMap);
 		addSummaryReportProps(BugHuntConstants.DATE_TIME, 
 				CommonUtil.getExecutionDateTime(), summaryMap);
 		int noOfStepsPassed = (int) reportObject.stream().filter(t->t.isTestPassed()).count();
@@ -159,7 +159,7 @@ public class SummaryReport {
 
 		List<Map<String, String>> summaryMap = getSummaryHeader(executedTests);
 		testObject.put("summaryHeaders",summaryMap);
-		String reportName = BugHuntConfig.instance().getExecutionReportPath() + deviceFolderName + "/SummaryReport.html";
+		String reportName = BugHuntConfig.getExecutionReportPath() + deviceFolderName + "/SummaryReport.html";
 		createReport(BugHuntConstants.SUMMARY_REPORT_TEMPLATE_NAME, testObject, reportName);
 		// failedTestsJSONReport(testsCompleted);
 		
@@ -182,7 +182,7 @@ public class SummaryReport {
 		List<Map<String, String>> props = new ArrayList<>();
 		props.add(getMultiConfigProps(BugHuntConstants.TEST_NAME, test.getName()));
 		props.add(getMultiConfigProps(BugHuntConstants.ENVIRONMENT, 
-				BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.ENVIRONMENT)));
+				BugHuntConfig.getBugHuntProperty(BugHuntConstants.ENVIRONMENT)));
 		
 		List<String> reportVals = tests.stream().map(t->t.getParallelConfig().get("ReportValue")).collect(Collectors.toList());
 		String reportVal = StringUtils.join(reportVals, ",");
@@ -221,7 +221,7 @@ public class SummaryReport {
 				// obj.put("name", "mkyong.com");
 			}
 			failedTestsObj.put("tests", failedTestsArray);
-			String filePath = BugHuntConfig.instance().getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + 
+			String filePath = BugHuntConfig.getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + 
 					BugHuntConstants.FAILED_TESTS_JSON;
 	        try (FileWriter file = new FileWriter(filePath)) {
 	            file.write(failedTestsObj.toJSONString());
@@ -235,7 +235,7 @@ public class SummaryReport {
 	
 	
 	private void createReport(String templateName, Object testObject, String reportName) {
-		final File templateDir = new File(BugHuntConfig.instance().getReportsTemplatePath());
+		final File templateDir = new File(BugHuntConfig.getReportsTemplatePath());
 		Mustache.Compiler c = Mustache.compiler().withLoader(new Mustache.TemplateLoader() {
     	    		public Reader getTemplate (String name) throws Exception {
     	    			return new FileReader(new File(templateDir, name));

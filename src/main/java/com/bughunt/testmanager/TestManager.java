@@ -19,7 +19,7 @@ public abstract class TestManager {
 	public abstract String getTestManagerColumnVal(String columnName, int rowNum);
 	
 	public void setParallelMultiConfigTests() {
-		List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
+		List<Map<String,String>> parallelConfigs = BugHuntConfig.getParallelConfigMap();
 		if(parallelConfigs==null) {
 			throw new InCompleteSettingsException("Please check ParallelConfig.json settings");
 		}
@@ -38,11 +38,11 @@ public abstract class TestManager {
 	}
 	
 	public void setParallelDeviceTests() {
-		List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
+		List<Map<String,String>> parallelConfigs = BugHuntConfig.getParallelConfigMap();
 		if(parallelConfigs==null) {
 			throw new InCompleteSettingsException("Please check ParallelConfig.json settings");
 		}
-		BugHuntConfig.instance().setParallelDeviceGroupID(parallelConfigs);
+		BugHuntConfig.setParallelDeviceGroupID(parallelConfigs);
 		TestSession.setParallelConfigs(parallelConfigs);
 		Set<String> distinctGroupIDs = parallelConfigs.stream().map(t->t.get(BugHuntConstants.GROUP_ID)).collect(Collectors.toSet());
 		System.out.println(distinctGroupIDs);

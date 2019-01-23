@@ -30,8 +30,8 @@ public class ExcelKeywordManager extends KeywordManager {
 	private String dataFile;
 	
 	public ExcelKeywordManager() {
-		String testSet = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_SET);
-		dataFile = BugHuntConfig.instance().getDataPath() + BugHuntConstants.EXCEL + "/" +testSet;
+		String testSet = BugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_SET);
+		dataFile = BugHuntConfig.getDataPath() + BugHuntConstants.EXCEL + "/" +testSet;
 	}
 	
 	@Override

@@ -72,8 +72,8 @@ public class ExcelUtil {
 			return;
 		}
 		setMasterData = true;
-		String testSet = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_SET);
-		String dataFile = BugHuntConfig.instance().getDataPath() + BugHuntConstants.EXCEL + "/" +testSet;
+		String testSet = BugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_SET);
+		String dataFile = BugHuntConfig.getDataPath() + BugHuntConstants.EXCEL + "/" +testSet;
 		Workbook workBook = null;
 		Map<Integer, Object> tempMasterData = new HashMap<>();
 		
@@ -194,12 +194,12 @@ public class ExcelUtil {
 		if(failedTests.size() == 0) {
 			return;
 		}
-		String fileName = BugHuntConfig.instance().getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
+		String fileName = BugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL;
 		Workbook workbook = null;
 		try (FileOutputStream fos = new FileOutputStream(fileName)) {
 			File file = new File(fileName);
 			workbook = new XSSFWorkbook();
-			Sheet failedTestSheet = workbook.createSheet(BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.TEST_SET));
+			Sheet failedTestSheet = workbook.createSheet(BugHuntConfig.getBugHuntProperty(BugHuntConstants.TEST_SET));
 			XSSFCellStyle style = getCellStyle(workbook);
 			int cellNum = 0;
 			Cell cell;
@@ -213,7 +213,7 @@ public class ExcelUtil {
 				cell.setCellValue(columnName);
 				cellNum++;
 			}
-			rowNum++;
+
 			for(Test test: failedTests) {
 				dataRow = failedTestSheet.createRow(rowNum);
 				for(Entry<String, Integer> columnEntry : ExcelTestManager.columnNameMap.entrySet()) {
@@ -255,7 +255,7 @@ public class ExcelUtil {
 	}
 	
 	public static void deleteFailedTestsExcel() {
-		Path fileToDeletePath = Paths.get(BugHuntConfig.instance().getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL);
+		Path fileToDeletePath = Paths.get(BugHuntConfig.getBaseFWPath() + BugHuntConstants.FAILED_TESTS_EXCEL);
 		try {
 			if(Files.exists(fileToDeletePath)) {
 				 Files.delete(fileToDeletePath);
@@ -272,7 +272,7 @@ public class ExcelUtil {
 	public static void setCommonData() {
 		Map<String, String> commonDataMap = new HashMap<>();
 		try {
-			String fileName = BugHuntConfig.instance().getDataPath() + BugHuntConstants.EXCEL + "/" + BugHuntConstants.COMMON_EXCEL_DATA;
+			String fileName = BugHuntConfig.getDataPath() + BugHuntConstants.EXCEL + "/" + BugHuntConstants.COMMON_EXCEL_DATA;
 			Workbook workbook = getWorkBook(fileName);
 			Sheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIt = sheet.rowIterator();

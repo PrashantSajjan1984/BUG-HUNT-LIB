@@ -32,7 +32,7 @@ public class TestExecutor {
 	}
 	
 	public void executeTestsInParallel() {
-		 String threadCount = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.THREAD_COUNT);
+		 String threadCount = BugHuntConfig.getBugHuntProperty(BugHuntConstants.THREAD_COUNT);
 		 int count = CommonUtil.getIntegerValue(threadCount) != 0 ? Integer.valueOf(threadCount) : Runtime.getRuntime().availableProcessors();
 		 ExecutorService es = Executors.newFixedThreadPool(count);
 	     List<Runnable> tasks = getTasks();
@@ -53,7 +53,7 @@ public class TestExecutor {
     }
 	
 	public void executeTestsForParallelConfig() {
-		 String threadCount = BugHuntConfig.instance().getBugHuntProperty(BugHuntConstants.THREAD_COUNT);
+		 String threadCount = BugHuntConfig.getBugHuntProperty(BugHuntConstants.THREAD_COUNT);
 		 int count = CommonUtil.getIntegerValue(threadCount) != 0 ? Integer.valueOf(threadCount) : Runtime.getRuntime().availableProcessors();
 		 ExecutorService es = Executors.newFixedThreadPool(count);
 	     List<Runnable> tasks = getTasksParallelConfig();
@@ -86,7 +86,7 @@ public class TestExecutor {
 	private List<Runnable> getTasksParallelDeviceConfig() {
        List<Runnable> tasks = new ArrayList<Runnable>();
        RunParallelDeviceConfig runParallel;
-       List<Map<String,String>> parallelConfigs = BugHuntConfig.instance().getParallelConfigMap();
+       List<Map<String,String>> parallelConfigs = BugHuntConfig.getParallelConfigMap();
        List<String> groupIDs = parallelConfigs.stream().map(t->t.get(BugHuntConstants.GROUP_ID)).collect(Collectors.toList());
        System.out.println(groupIDs);
        SummaryReport summaryReport = new SummaryReport();

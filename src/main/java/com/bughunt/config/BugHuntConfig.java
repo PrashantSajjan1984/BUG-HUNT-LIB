@@ -30,88 +30,79 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BugHuntConfig {
 
-	public static BugHuntConfig bugHuntConfig;
-	private Properties bugHuntProps;
-	private String baseFWPath;
-	private String fwConfigPath;
-	private String keywordPackagePath;
-	private String reportsTemplatePath;
-	private String reportsPath;
-	private String dataPath;
-	private String executionReportPath;
-	private boolean configSet = false;
-	private String envURL;
-	private JSONObject urlJSONObj;
-	private List<Map<String, String>> parallelConfig;
+	public  static BugHuntConfig bugHuntConfig;
+	private static Properties bugHuntProps;
+	private static String baseFWPath;
+	private static String fwConfigPath;
+	private static String keywordPackagePath;
+	private static String reportsTemplatePath;
+	private static String reportsPath;
+	private static String dataPath;
+	private static String executionReportPath;
+	private static boolean configSet = false;
+	private static String envURL;
+	private static JSONObject urlJSONObj;
+	private static List<Map<String, String>> parallelConfig;
 	
-	private BugHuntConfig() {
-		
-	}
 	
-	public static BugHuntConfig instance() {
-		if(bugHuntConfig == null) {
-			bugHuntConfig = new BugHuntConfig();
-		}
-		return bugHuntConfig;
-	}
 	
-	public String getBaseFWPath() {
+	public static  String getBaseFWPath() {
 		return baseFWPath;
 	}
 	
-	public String getFWConfigPath() {
+	public static  String getFWConfigPath() {
 		return fwConfigPath;
 	}
 
-	public String getKeywordPackagePath() {
+	public static  String getKeywordPackagePath() {
 		return keywordPackagePath;
 	}
 	
-	public String getReportsTemplatePath() {
+	public static  String getReportsTemplatePath() {
 		return reportsTemplatePath;
 	}
 	
-	public String getReportsPath() {
+	public static  String getReportsPath() {
 		return reportsPath;
 	}
 	
-	public String getDataPath() {
+	public static  String getDataPath() {
 		return dataPath;
 	}
 
-	private void setBaseFWPath(String baseFWPath) {
-		this.baseFWPath = baseFWPath;
+	private static void setBaseFWPath(String baseFWPath) {
+		BugHuntConfig.baseFWPath = baseFWPath;
 	}
 
-	private void setFWConfigPath(String fwConfigPath) {
-		this.fwConfigPath = fwConfigPath;
+	private static void setFWConfigPath(String fwConfigPath) {
+		BugHuntConfig.fwConfigPath = fwConfigPath;
 	}
 
-	private void setKeywordPackagePath(String keywordPackagePath) {
-		this.keywordPackagePath = keywordPackagePath;
+	private static void setKeywordPackagePath(String keywordPackagePath) {
+		BugHuntConfig.keywordPackagePath = keywordPackagePath;
 	}
 
-	private void setReportsTemplatePath(String reportsTemplatePath) {
-		this.reportsTemplatePath = reportsTemplatePath;
+	private static void setReportsTemplatePath(String reportsTemplatePath) {
+		BugHuntConfig.reportsTemplatePath = reportsTemplatePath;
 	}
 
-	private void setReportsPath(String reportsPath) {
-		this.reportsPath = reportsPath;
+	private static void setReportsPath(String reportsPath) {
+		BugHuntConfig.reportsPath = reportsPath;
 	}
 
-	private void setDataPath(String dataPath) {
-		this.dataPath = dataPath;
+	private static void setDataPath(String dataPath) {
+		BugHuntConfig.dataPath = dataPath;
 	}
 	
-	public String getExecutionReportPath() {
-		return executionReportPath;
+	public static  String getExecutionReportPath() {
+		return BugHuntConfig.executionReportPath;
 	}
 
-	public void setExecutionReportPath(String executionReportPath) {
-		this.executionReportPath = executionReportPath + "/"; 
+	public static  void setExecutionReportPath(String executionReportPath) {
+		BugHuntConfig.executionReportPath = executionReportPath + "/"; 
 	}
 
-	public void setConfigPaths() {
+	public static  void setConfigPaths() {
 		if(configSet) {
 			return;
 		}
@@ -134,7 +125,7 @@ public class BugHuntConfig {
 		setReRunCount();
 	}
 
-	private void setFWProps() {
+	private static void setFWProps() {
 		bugHuntProps = new Properties();
 		try {
 			FileInputStream configFile=new FileInputStream(fwConfigPath);
@@ -144,7 +135,7 @@ public class BugHuntConfig {
 		}
 	}
 	
-	public String getBugHuntProperty(String propertyName) {
+	public static  String getBugHuntProperty(String propertyName) {
 		String propertyVal ="";
 		try {
 			propertyVal = bugHuntProps.getProperty(propertyName).trim(); 
@@ -154,7 +145,7 @@ public class BugHuntConfig {
         return propertyVal;
 	}
 	
-	private void setReportProps() {
+	private static void setReportProps() {
 		String reportProps = null;
 		switch(TestSession.getExecutionMode()) {
 		case PARALLEL:
@@ -173,14 +164,14 @@ public class BugHuntConfig {
 		TestSession.setReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
 	}
 	
-	private void setSummaryReportProps() {
+	private static void setSummaryReportProps() {
 		String reportProps = null;
 		reportProps = getBugHuntProperty(BugHuntConstants.SUMMARY_REPORT_PROPERTIES);
 		String[] propsSplit = reportProps.split(",");
 		TestSession.setSummaryReportProps(new LinkedHashSet<>(Arrays.asList(propsSplit)));
 	}
 	
-	private void setScreenShotEnum() {
+	private static void setScreenShotEnum() {
 		EnumSet<StepResult> screenShotList = EnumSet.noneOf(StepResult.class);
 		if("true".equals(getBugHuntProperty(BugHuntConstants.PASS_SCREENSHOT).toLowerCase())) {
 			screenShotList.add(StepResult.PASS);
@@ -194,14 +185,14 @@ public class BugHuntConfig {
 		TestSession.setScreenShotStepResults(screenShotList);
 	}
 
-	public String getEnvironmentURL() {
+	public static  String getEnvironmentURL() {
 		if(null==envURL) {
 			setEnvURL();
 		}
 		return envURL;
 	}
 	
-	private void setURLJsonObject() {
+	private static void setURLJsonObject() {
 		JSONParser parser = new JSONParser();
 		try {
 			urlJSONObj  =  (JSONObject) parser.parse(new FileReader(baseFWPath + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + "Environment.json"));
@@ -210,7 +201,7 @@ public class BugHuntConfig {
 		} 
 	}
 	
-	private void setEnvURL() {
+	private static void setEnvURL() {
 		String env = getBugHuntProperty("Environment");
 		getEnvironmentURL(env);
 		if(null!=urlJSONObj && urlJSONObj.containsKey(env)) {
@@ -220,7 +211,7 @@ public class BugHuntConfig {
 		}
 	}
 	
-	public String getEnvironmentURL(String environment) {
+	public static  String getEnvironmentURL(String environment) {
 		String url = "";
 		if(null!=urlJSONObj && urlJSONObj.containsKey(environment)) {
 			url = (String) urlJSONObj.get(environment);
@@ -230,13 +221,13 @@ public class BugHuntConfig {
 		return url;
 	}
 	
-	public void setCurrentExecutionMode() {
+	public static  void setCurrentExecutionMode() {
 		String executionMode = getBugHuntProperty(BugHuntConstants.EXECUTION_MODE);
 		ExecutionMode mode = ExecutionMode.valueOf(executionMode.toUpperCase());
 		TestSession.setExecutionMode(mode);
 	}
 	
-	private void setReRunCount() {
+	private static void setReRunCount() {
 		String reRunCountVal = getBugHuntProperty(BugHuntConstants.RE_RUN_COUNT);
 		int reRunCount = 0;
 		try {
@@ -247,7 +238,7 @@ public class BugHuntConfig {
 		TestSession.setReRunCount(reRunCount);
 	}
 	
-	public List<Map<String,String>> getParallelConfigMap() {
+	public static  List<Map<String,String>> getParallelConfigMap() {
 		if(parallelConfig == null) {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
@@ -269,7 +260,7 @@ public class BugHuntConfig {
 		return parallelConfig;
 	}
 	
-	public List<Map<String,String>> setParallelDeviceGroupID(List<Map<String,String>> parallelConfigs) {
+	public static  List<Map<String,String>> setParallelDeviceGroupID(List<Map<String,String>> parallelConfigs) {
 		int min = 8;
 		int max =100;
 		int index = 0;

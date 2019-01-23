@@ -55,7 +55,7 @@ public class JsonTestManager extends TestManager {
 		List<Map<String, Object>> tests = null;
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-	    File file = new File(BugHuntConfig.instance().getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.FAILED_TESTS_JSON);
+	    File file = new File(BugHuntConfig.getBaseFWPath() + BugHuntConstants.SRC_MAIN_RESOURCES_PATH + BugHuntConstants.FAILED_TESTS_JSON);
 	    String json = FileUtils.readFileToString(file);
 	    tests = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>(){});
 		return tests;
